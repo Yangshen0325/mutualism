@@ -26,8 +26,7 @@ get_ana_rate <- function(laa_par,
                          p_status,
                          a_status) {  
   
-  plant_ana_rate =  laa_par[1] + 
-    laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]
+ 
   animal_ana_rate =  laa_par[3] + 
     laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]
   
