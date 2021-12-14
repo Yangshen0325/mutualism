@@ -186,7 +186,7 @@ get_loss_rate <- function(Mt,
 # qgain <- 0.1
 # #
 # update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                   M0,Mt,p_status,a_status)
+#                  M0,Mt,p_status,a_status)
 
 update_rates_mutual <- function(gam0_lac0_par,
                                 K_par,
@@ -279,4 +279,4 @@ update_rates_mutual <- function(gam0_lac0_par,
   
   return(rates)
 }
-
+# save(rates, file="rates.Rdata")

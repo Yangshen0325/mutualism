@@ -14,11 +14,11 @@
 #
 # example:
 #
-lambda1 <- 0.1
-K_par <- c(20,0.6,20,0.6)
-Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-p_status<-c(1,1,1,1)
-a_status<-c(1,1,1,1,1)
+# lambda1 <- 0.1
+# K_par <- c(20,0.6,20,0.6)
+# Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# p_status<-c(1,1,1,1)
+# a_status<-c(1,1,1,1,1)
 #
 # get_cospec_rate(lambda1,K_par,Mt,p_status,a_status)
 
