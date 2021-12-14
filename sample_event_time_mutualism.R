@@ -14,7 +14,7 @@
 
 #example:
 # library(reshape2)
-# load("rates.RData")
+# load("rates.Rdata")
 # update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
 #                   M0,Mt,p_status,a_status)
 # event <- possible_event(rates) 
