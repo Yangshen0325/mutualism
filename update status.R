@@ -67,7 +67,7 @@ new_Mt_clado_a <- function(Mt,event,p){
 
 # if anagenesis happends with animal species
 # Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-new_Mt_ana_a <- function(Mt,event,p){  #??? what if c(0,0,0,0)
+new_Mt_ana_a <- function(Mt,event,p){  
   
   newcols <- c()
   h <- event$Var1
@@ -125,18 +125,18 @@ update_state <- function(
   
   if(event$L1 == 1){# [1]: immigration event with plant species
     
-    Mt <- Mt
+    Mt <- Mt  # you can delete it because it doesn't change 
     h <- event$Var1
     p_status[h] <- 1
-    a_status <- a_status
+    a_status <- a_status # can be deleted
     
   } else
     if(event$L1 == 2){# [2]: extinction event with plant species
       
-      Mt <- Mt
+      Mt <- Mt # can be deleted
       h <- event$Var1
       p_status[h] <- 0
-      a_status <- a_status
+      a_status <- a_status # can be deleted
       
     } else
       if(event$L1 == 3){# [3]: cladogenesis event with plant species
@@ -145,7 +145,7 @@ update_state <- function(
         h <- event$Var1
         p_status[h] <- 0
         p_status <- c(p_status,1,1)
-        a_status <- a_status
+        a_status <- a_status # can be deleted
         
       } else
         if(event$L1 == 4){# [4]: anagenesis event with plant species
@@ -154,29 +154,29 @@ update_state <- function(
           h <- event$Var1
           p_status[h] <- 0
           p_status <- c(p_status,1)
-          a_status <- a_status
+          a_status <- a_status # can be deleted
           
         } else
           if(event$L1 == 5){# [5]: immigration event with animal species
             
-            Mt <- Mt
+            Mt <- Mt # can be deleted
             h <- event$Var1
-            p_status <- p_status
+            p_status <- p_status # can be deleted
             a_status[h] <- 1
             
           } else
             if(event$L1 == 6){# [6]: extinction event with animal species
               
-              Mt <- Mt
+              Mt <- Mt # can be deleted
               h <- event$Var1
-              p_status <- p_status
+              p_status <- p_status # can be deleted
               a_status[h] <- 0
               
             } else 
               if(event$L1 == 7){# [7]: cladogenesis event with animal species
                 
                 Mt <- new_Mt_clado_a(Mt=Mt,event=event,p=p)
-                p_status <- p_status
+                p_status <- p_status # can be deleted
                 h <- event$Var1
                 a_status[h] <- 0
                 a_status <- c(a_status,1,1)
@@ -185,7 +185,7 @@ update_state <- function(
                 if(event$L1 == 8){# [8]: anagenesis event with animal species
                   
                   Mt <- new_Mt_ana_a(Mt=Mt,event=event,p=p)
-                  p_status <- p_status
+                  p_status <- p_status # can be deleted
                   h <- event$Var1
                   a_status[h] <- 0
                   a_status <- c(a_status,1)
@@ -207,8 +207,8 @@ update_state <- function(
                       h <- event$Var1
                       k <- event$Var2
                       Mt[h,k] == 1
-                      p_status <- p_status
-                      a_status <- a_status
+                      p_status <- p_status # can be deleted
+                      a_status <- a_status # can be deleted
                       
                     } else 
                       if(event$L1 == 11){# [11]: loss links event between pairs
@@ -216,8 +216,8 @@ update_state <- function(
                         h <- event$Var1
                         k <- event$Var2
                         Mt[h,k] == 1
-                        p_status <- p_status
-                        a_status <- a_status
+                        p_status <- p_status # can be deleted
+                        a_status <- a_status # can be deleted
                         
                       }
   new_state <- list(Mt = Mt,
