@@ -1,5 +1,5 @@
 
-# Calculate extinction rate
+# Calculate extinction rates
 # 
 # mu_par includes: mu_par <- c(muP0,muP1,muA0,muA1)
 # muP0: the initial extinction rate of plant species without mutualistic partners
