@@ -1,4 +1,4 @@
-# Calculate anagenesis rate
+# Calculate anagenesis rates
 # 
 # laa_par includes: laa_par <- c(p_laa0,p_laa1,a_laa0,a_laa1)
 # p_laa0: the initial anagenesis rate of plant species without mutualistic partners
