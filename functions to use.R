@@ -10,17 +10,17 @@ get_part_compe <- function(Mt,
   
   tMt <- t(Mt) 
   
-  plant_part <- Mt %*% a_status
-  animal_part <- tMt %*% p_status
+  plant_part <- Mt %*% a_status #the number of partners that each plant species has
+  animal_part <- tMt %*% p_status #the number of partners that each animal species has
   
   plant_compe <- matrix()
   animal_compe <- matrix()
   for (x in seq(ncol(tMt))){
     plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
-  }
+  }  # the number of competitors of each plant species
   for (x in seq(ncol(Mt))){
     animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
-  }
+  } # the number of competitors of each animal species
   
   part_compe_list <- list(plant_part = plant_part,
                           animal_part = animal_part,
@@ -29,7 +29,13 @@ get_part_compe <- function(Mt,
   
   return(part_compe_list)
 }
-
+# N/K
+# K_par includes: K_par <- c(KP0,KP1,KA0,KA1)
+# KP0: the initial carrying capacity of plant species without any mutualists
+# KA0: the initial carrying capacity of animal species without any mutualists
+# KP1: a coefficient showing the influence from mutualism to plant species
+# KA1: a coefficient showing the influence from mutualism to animal species
+# K_par <- c(20,0.6,20,0.6)
 get_NK <- function(K_par,
                    Mt,
                    p_status,
@@ -49,7 +55,7 @@ get_NK <- function(K_par,
   
   return(NK_list)
 }
-
+# get p_status and a_status expanded
 get_expand_matrix <- function(Mt,
                               p_status,
                               a_status){
