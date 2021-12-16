@@ -26,16 +26,27 @@ get_NK <- function(K_par,
                    Mt,
                    p_status,
                    a_status){
+  
   part_compe_list <- get_part_compe(Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
-  plant_NK <-  exp(-(sum(p_status)/K_par[1])+
-                     part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
+  
+  indp <- which(part_compe_list[[1]]==0)
+  inda <- which(part_compe_list[[2]]==0)
+  
+  plant_NK <- exp(-(sum(p_status)/K_par[1])+
+                    part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
+  plant_NK[indp] <- exp(-(sum(p_status)/K_par[1]))
+  
+  
   animal_NK <- exp(-(sum(a_status)/K_par[3])+
-                     part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]]))
+                     part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]])) 
+  animal_NK[inda] <- exp(-(sum(a_status)/K_par[3]))
+  
   
   NK_list <- list(plant_NK = plant_NK,
                   animal_NK = animal_NK)
+  
   return(NK_list)
 }
 
