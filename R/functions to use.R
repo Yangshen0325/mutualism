@@ -1,7 +1,7 @@
 # get mutualistic partners and competitors for animal and plant species
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(0,1,0,0)
-# a_status<-c(1,1,1,0,1)
+# p_status<-c(0,1,1,0)
+# a_status<-c(1,0,0,1,1)
 # get_part_compe(Mt, p_status,a_status)
 
 get_part_compe <- function(Mt,
