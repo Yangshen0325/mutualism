@@ -127,7 +127,7 @@ update_state <- function(
   
   if(possible_event$L1 == 1){# [1]: immigration event with plant species
     
-    colonistp <- possible_event$Var1
+    colonistp = DDD::sample2(mainland_nplant,1)
     p_status[colonistp] <- 1
     
     if (length(island_spec[,1]) != 0)
@@ -136,23 +136,14 @@ update_state <- function(
       island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA,"p")
     } else
     {
-      isitthere = c()
-    }
-    
-    if (length(isitthere) == 0)
-    {
       island_spec = rbind(island_spec,c(colonist,colonist,timeval,"I",NA,NA,NA,"p"))
     }
     
-    if (length(isitthere) != 0)
-    {
-      
-    }
-    
   } else
-    if(event$L1 == 2){# [2]: extinction event with plant species
+    if(possible_event$L1 == 2){# [2]: extinction event with plant species
       
-      extinctp <- event$Var1
+      island_spec_plant = which(island_spec[,8] == "p")
+      extinctp = DDD::sample2(island_spec_plant,1)
       p_status[extinctp] <- 0
       
       typeofspecies = island_spec[extinctp,4]
@@ -164,7 +155,7 @@ update_state <- function(
       
       if(typeofspecies == "A")
       {
-        island_spec = island_spec[-extinctP,] #remove anagenetic
+        island_spec = island_spec[-extinctp,] #remove anagenetic
       }
       
       if(typeofspecies == "C")
@@ -217,7 +208,10 @@ update_state <- function(
       island_spec = rbind(island_spec)
     }else
       
-      if(event$L1 == 3){# [3]: cladogenesis event with plant species
+      if(possible_event$L1 == 3){# [3]: cladogenesis event with plant species
+        
+        island_spec_state1 = which(island_spec[,8] == "1")
+        tosplit = DDD::sample2(island_spec_state1,1)
         
         Mt <- new_Mt_clado_p(Mt=Mt,event=event,p=p)
         tosplitp <- event$Var1
@@ -258,10 +252,12 @@ update_state <- function(
         }
         
       } else
-        if(event$L1 == 4){# [4]: anagenesis event with plant species
+        if(possible_event$L1 == 4){# [4]: anagenesis event with plant species
+          
+          immi_specs = intersect(which(island_spec[,4] == "I"), which(island_spec[,8] == "p"))
+          anagenesisp = DDD::sample2(immi_specs,1)
           
           Mt <- new_Mt_ana_p(Mt=Mt,event=event,p=p)
-          anagenesisp <- event$Var1
           p_status[anagenesisp] <- 0
           p_status <- c(p_status,1)
           
@@ -272,7 +268,7 @@ update_state <- function(
           island_spec[anagenesisp,8] = "p"
           
         } else
-          if(event$L1 == 5){# [5]: immigration event with animal species
+          if(possible_event$L1 == 5){# [5]: immigration event with animal species
             
             Mt <- Mt # can be deleted
             h <- event$Var1
