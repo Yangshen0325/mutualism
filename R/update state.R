@@ -118,17 +118,15 @@ update_state <- function(
   timeval,
   totaltime,
   possible_event,
-  
   p,
   Mt,
   p_status,
-  a_status,
-  rates){
+  a_status){
   
   if(possible_event$L1 == 1){# [1]: immigration event with plant species
     
-    colonistp = DDD::sample2(mainland_nplant,1)
-    p_status[colonistp] <- 1
+    colonist = possible_event$Var1
+    p_status[colonist] <- 1
     
     if (length(island_spec[,1]) != 0)
     {
@@ -210,11 +208,10 @@ update_state <- function(
       
       if(possible_event$L1 == 3){# [3]: cladogenesis event with plant species
         
-        island_spec_state1 = which(island_spec[,8] == "1")
-        tosplit = DDD::sample2(island_spec_state1,1)
+        island_spec_plant = which(island_spec[,8] == "p")
+        tosplitp = DDD::sample2(island_spec_plant,1)
         
-        Mt <- new_Mt_clado_p(Mt=Mt,event=event,p=p)
-        tosplitp <- event$Var1
+        Mt <- new_Mt_clado_p(Mt=Mt,possible_event=possible_event,p=p)
         p_status[tosplitp] <- 0
         p_status <- c(p_status,1,1)
         
@@ -257,7 +254,7 @@ update_state <- function(
           immi_specs = intersect(which(island_spec[,4] == "I"), which(island_spec[,8] == "p"))
           anagenesisp = DDD::sample2(immi_specs,1)
           
-          Mt <- new_Mt_ana_p(Mt=Mt,event=event,p=p)
+          Mt <- new_Mt_ana_p(Mt=Mt,possible_event,p=p)
           p_status[anagenesisp] <- 0
           p_status <- c(p_status,1)
           
