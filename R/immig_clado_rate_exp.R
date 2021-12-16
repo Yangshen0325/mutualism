@@ -20,8 +20,8 @@
 # gam0_lac0_par <- c(0.6,0.6,0.3,0.3)
 # K_par <- c(20,0.6,20,0.6)
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(1,1,1,1)
-# a_status<-c(1,1,1,1,1)
+# p_status<-c(0,1,1,0)
+# a_status<-c(1,0,0,1,1)
 #
 
 #get_immig_clado_rate(gam0_lac0_par,K_par,Mt,p_status,a_status)
@@ -41,8 +41,8 @@ get_immig_clado_rate <- function(gam0_lac0_par,
   plant_immig_rate <- gam0_lac0_par[1] * NK_list[[1]]
   animal_immig_rate <- gam0_lac0_par[2] * NK_list[[2]]
   
-  plant_clado_rate <- gam0_lac0_par[3] * NK_list[[1]]
-  animal_clado_rate <- gam0_lac0_par[4] * NK_list[[2]]
+  plant_clado_rate <- gam0_lac0_par[3] * NK_list[[1]] * p_status
+  animal_clado_rate <- gam0_lac0_par[4] * NK_list[[2]] *a_status
   
   immig_clado_list <- list(plant_immig_rate = plant_immig_rate,
                            animal_immig_rate = animal_immig_rate,
