@@ -75,8 +75,8 @@ get_immig_clado_rate <- function(gam0_lac0_par,
   plant_immig_rate <- gam0_lac0_par[1] * NK_list[[1]]
   animal_immig_rate <- gam0_lac0_par[2] * NK_list[[2]]
   
-  plant_clado_rate <- gam0_lac0_par[3] * NK_list[[1]]
-  animal_clado_rate <- gam0_lac0_par[4] * NK_list[[2]]
+  plant_clado_rate <- gam0_lac0_par[3] * NK_list[[1]] * p_status
+  animal_clado_rate <- gam0_lac0_par[4] * NK_list[[2]] *a_status
   
   immig_clado_list <- list(plant_immig_rate = plant_immig_rate,
                            animal_immig_rate = animal_immig_rate,
@@ -95,8 +95,8 @@ get_ext_rate <- function(mu_par,
                                     p_status= p_status,
                                     a_status= a_status)
   
-  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[1]])) 
-  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[2]])) 
+  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[1]])) * p_status
+  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[2]])) *a_status
   
   ext_list <- list(plant_ext_rate = plant_ext_rate,
                    animal_ext_rate = animal_ext_rate)
@@ -109,10 +109,10 @@ get_ana_rate <- function(laa_par,
                          p_status,
                          a_status) {  
   
-  plant_ana_rate =  laa_par[1] + 
-    laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]
-  animal_ana_rate =  laa_par[3] + 
-    laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]
+  plant_ana_rate =  (laa_par[1] + 
+                       laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) * p_status
+  animal_ana_rate =  (laa_par[3] + 
+                        laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * a_status
   
   ana_list <- list(plant_ana_rate = plant_ana_rate,
                    animal_ana_rate = animal_ana_rate)
@@ -189,15 +189,15 @@ get_loss_rate <- function(Mt,
 # lac0_par <- c(0.3,0.3)
 # lambda1 <- 0.1
 # K_par <- c(20,0.6,20,0.6)
-# M0 <- {set.seed(2);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(1,1,1,1)
-# a_status<-c(1,1,1,1,1)
+# p_status<-c(0,1,1,0)
+# a_status<-c(1,0,0,1,1)
 # qloss <- 0.1
 # qgain <- 0.1
 # #
-# update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                  M0,Mt,p_status,a_status)
+# rates <-update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
+#                M0,Mt,p_status,a_status)
 
 update_rates_mutual <- function(gam0_lac0_par,
                                 K_par,
