@@ -107,12 +107,16 @@ get_ana_rate <- function(laa_par,
                          M0,
                          Mt,
                          p_status,
-                         a_status) {  
+                         a_status,
+                         island_spec_plant,
+                         island_spec_animal) {  
   
   plant_ana_rate =  (laa_par[1] + 
-                       laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) * p_status
+                       laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
+    p_status * (island_spec_plant[, 4] == "I")
   animal_ana_rate =  (laa_par[3] + 
-                        laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * a_status
+                        laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * 
+    a_status * (island_spec_animal[, 4] == "I")
   
   ana_list <- list(plant_ana_rate = plant_ana_rate,
                    animal_ana_rate = animal_ana_rate)
@@ -195,9 +199,19 @@ get_loss_rate <- function(Mt,
 # a_status<-c(1,0,0,1,1)
 # qloss <- 0.1
 # qgain <- 0.1
-# #
+# 
+# rep.row<-function(x,n){
+#   matrix(rep(x,each=n),nrow=n)}
+# island_spec_plant <-c("NA","NA","NA","I","NA","NA","NA")
+# island_spec_plant <- rep.row(c(island_spec_plant),4)
+# island_spec_plant[c(1,4),4] <- "A"
+# 
+# island_spec_animal <-c("NA","NA","NA","I","NA","NA","NA")
+# island_spec_animal <- rep.row(c(island_spec_animal),5)
+# island_spec_animal[c(2,3,4),4] <- "A"
+
 # rates <-update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                M0,Mt,p_status,a_status)
+#                M0,Mt,p_status,a_status,island_spec_plant,island_spec_animal)
 
 update_rates_mutual <- function(gam0_lac0_par,
                                 K_par,
@@ -209,7 +223,9 @@ update_rates_mutual <- function(gam0_lac0_par,
                                 M0,
                                 Mt,
                                 p_status,
-                                a_status) {
+                                a_status,
+                                island_spec_plant,
+                                island_spec_animal) {
   
   part_compe_list <- get_part_compe(Mt=Mt,
                                     p_status= p_status,
@@ -247,7 +263,9 @@ update_rates_mutual <- function(gam0_lac0_par,
     M0 = M0,
     Mt = Mt,
     p_status = p_status,
-    a_status = a_status)
+    a_status = a_status,
+    island_spec_plant = island_spec_plant,
+    island_spec_animal = island_spec_animal)
   #testit::assert(is.list(ana_rate))
   
   #cospeciation rate
