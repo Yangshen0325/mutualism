@@ -204,11 +204,11 @@ get_loss_rate <- function(Mt,
 #   matrix(rep(x,each=n),nrow=n)}
 # island_spec_plant <-c("NA","NA","NA","I","NA","NA","NA")
 # island_spec_plant <- rep.row(c(island_spec_plant),4)
-# island_spec_plant[c(1,4),4] <- "A"
+# island_spec_plant[c(1,4),4] <- "NA"
 # 
 # island_spec_animal <-c("NA","NA","NA","I","NA","NA","NA")
 # island_spec_animal <- rep.row(c(island_spec_animal),5)
-# island_spec_animal[c(2,3,4),4] <- "A"
+# island_spec_animal[c(2,3,4),4] <- "NA"
 
 # rates <-update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
 #                M0,Mt,p_status,a_status,island_spec_plant,island_spec_animal)
