@@ -113,6 +113,17 @@ new_Mt_cospec <- function(Mt,event,p){
   return(Mt)
 }
 
+######################################################
+# rep.row<-function(x,n){
+#   matrix(rep(x,each=n),nrow=n)}
+# island_spec_plant <-c("NA","NA","NA","I","NA","NA","NA")
+# island_spec_plant <- rep.row(c(island_spec_plant),4)
+# island_spec_plant[c(1,4),4] <- "NA"
+# 
+# island_spec_animal <-c("NA","NA","NA","I","NA","NA","NA")
+# island_spec_animal <- rep.row(c(island_spec_animal),5)
+# island_spec_animal[c(2,3,4),4] <- "NA"
+
 #Updates state of island given sampled event
 update_state <- function(
   timeval,
@@ -121,7 +132,11 @@ update_state <- function(
   p,
   Mt,
   p_status,
-  a_status){
+  a_status,
+  maxplantID,
+  maxanimalID,
+  island_spec_plant,
+  island_spec_animal){
   
   ##########################################
   # [1]: immigration event with plant species
@@ -130,13 +145,17 @@ update_state <- function(
     colonist = possible_event$Var1
     p_status[colonist] <- 1
     
-    if (length(island_spec[,1]) != 0)
+    if (length(island_spec_plant[,1]) != 0)
     {
-      isitthere = which(island_spec[,1] == colonist)
-      island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA,"p")
-    } else
-    {
-      island_spec = rbind(island_spec,c(colonist,colonist,timeval,"I",NA,NA,NA,"p"))
+      isitthere <- which(island_spec_plant[,1] == colonist)
+    }else{
+      isitthere <- c()
+    }
+    if(length(isitthere) == 0) {
+      island_spec_plant <- rbind(island_spec_plant,c(colonist,colonist,timeval,"I",NA,NA,NA))
+    }
+    is(length(isitthere) != 0) {
+      island_spec_plant[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)
     }
   } 
   ##########################################
@@ -211,26 +230,27 @@ update_state <- function(
   # [3]: cladogenesis event with plant species
   if(possible_event$L1 == 3){
     
-    tosplit = possible_event$Var1
+    tosplit <- possible_event$Var1
+    ind <- which(island_spec_plant[,1]==tosplit)
     
-    Mt <- new_Mt_clado_p(Mt=Mt,possible_event=possible_event,p=p)
+    Mt <- new_Mt_clado_p(Mt=Mt, possible_event=possible_event, p=p)
     p_status[tosplit] <- 0
     p_status <- c(p_status,1,1)
     
-    if(island_spec[tosplit,4] == "C")
+    #if the species that speciates is cladogenetic
+    if(island_spec[ind,4] == "C")
     {
       #for daughter A
-      island_spec[tosplit,4] = "C"
-      island_spec[tosplit,1] = maxspecID + 1
-      oldstatus = island_spec[tosplit,5]
-      island_spec[tosplit,5] = paste(oldstatus,"A",sep = "")
-      #island_spec[tosplit,6] = timeval
-      island_spec[tosplit,7] = NA
-      island_spec[tosplit,8] = "1"
+    
+      island_spec_plant[ind, 1] <- NROW(Mt) + 1
+      oldstatus <- island_spec_plant[ind, 5]
+      island_spec_plant[ind, 5] = paste(oldstatus,"A",sep = "")
+      island_spec_plant[ind, 7] = NA
       
       #for daughter B
-      island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],
-                                        "C",paste(oldstatus,"B",sep = ""),timeval,NA,1))
+      
+      island_spec_plant <- rbind(island_spec_plant,c(NROW(Mt) + 2,island_spec_plant[ind, 2],island_spec_plant[ind, 3],
+                                        "C",paste(oldstatus,"B",sep = ""),timeval,NA))
       maxspecID = maxspecID + 2
     } else {
       #if the species that speciates is not cladogenetic
@@ -255,17 +275,16 @@ update_state <- function(
     
     anagenesis = possible_event$Var1
     
-    Mt <- new_Mt_ana_p(Mt=Mt,possible_event,p=p)
+    Mt <- new_Mt_ana_p(Mt=Mt, possible_event=possible_event, p=p)
     p_status[anagenesis] <- 0
     p_status <- c(p_status,1)
     
-    maxspecID = maxspecID + 1
-    island_spec[anagenesis,4] = "A"
-    island_spec[anagenesis,1] = maxspecID
-    island_spec[anagenesis,7] = "Immig_parent"
-    island_spec[anagenesis,8] = "p"
-    
-  } else
+    ind <- which(island_spec_plant[,1]==anagenesis)
+    island_spec_plant[ind,4] = "A"
+    island_spec_plant[ind,1] = maxplantID
+    island_spec_plant[ind,7] = "Immig_parent"
+ 
+  } 
     if(possible_event$L1 == 5){# [5]: immigration event with animal species
       
       Mt <- Mt # can be deleted
