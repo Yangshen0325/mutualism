@@ -1,13 +1,12 @@
 # get mutualistic partners and competitors for animal and plant species
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,1,1)
+# a_status<-c(1,0,0,0,1)
 # get_part_compe(Mt, p_status,a_status)
 
 get_part_compe <- function(Mt,
                            p_status,
                            a_status){
-  
   tMt <- t(Mt) 
   
   plant_part <- Mt %*% a_status #the number of partners that each plant species has
@@ -39,12 +38,11 @@ get_part_compe <- function(Mt,
 # KP1: a coefficient showing the influence from mutualism to plant species
 # KA1: a coefficient showing the influence from mutualism to animal species
 # K_par <- c(20,0.6,20,0.6)
-# get_NK(K_par,Mt, p_status,a_status)
+# get_NK(K_par,M0, p_status,a_status)
 get_NK <- function(K_par,
                    Mt,
                    p_status,
                    a_status){
-  
   part_compe_list <- get_part_compe(Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
@@ -68,15 +66,110 @@ get_NK <- function(K_par,
   return(NK_list)
 }
 # get p_status and a_status expanded
+# get_expand_matrix <- (Mt, p_status, a_status)
 get_expand_matrix <- function(Mt,
                               p_status,
                               a_status){
-  
   expd_p_sta <- matrix(rep(p_status,NCOL(Mt)), ncol = NCOL(Mt))
   expd_a_sta <- t(matrix(rep(a_status,NROW(Mt)),ncol = NROW(Mt)))
   
   expand_matrix_list <- list(expd_p_sta = expd_p_sta,
                              expd_a_sta = expd_a_sta)
   return(expand_matrix_list)
+}
+
+# new Mt if cladogenesis happends with plant species
+new_Mt_clado_p <- function(Mt, possible_event, p){
+  
+  possible_output <- list(c(1,1), c(1,0), c(0,1))
+  newrows <- list()
+  h <- event$Var1
+  newrows[c(which(Mt[h,]==0))] <- list(c(0,0))
+  newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
+                                         size=length(which(Mt[h,]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)/2,(1-p)/2))
+  newrows<-matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
+  
+  Mt <- rbind(Mt,newrows)
+  return(Mt)
+}
+
+# new Mt if anagenesis happends with plant species
+new_Mt_ana_p <- function(Mt, possible_event, p){
+  
+  newrows <- c()
+  h <- event$Var1
+  newrows[c(which(Mt[h,]==0))] <- 0
+  newrows[c(which(Mt[h,]==1))] <- sample(c(1,0), 
+                                         size=length(which(Mt[h,]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)))
+  Mt <- rbind(Mt,newrows)
+  return(Mt)
+}
+# if cladogenesis happends with animal species
+new_Mt_clado_a <- function(Mt, possible_event, p){
+  
+  possible_output <- list(c(1,1), c(1,0), c(0,1))
+  newcols <- list()
+  h <- event$Var1
+  newcols[c(which(Mt[,h]==0))] <- list(c(0,0))
+  newcols[c(which(Mt[,h]==1))] <- sample(possible_output, 
+                                         size=length(which(Mt[,h]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)/2,(1-p)/2))
+  
+  newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
+  Mt <- cbind(Mt,newcols)
+  return(Mt)
+}
+
+# if anagenesis happends with animal species
+# Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+new_Mt_ana_a <- function(Mt, possible_event, p){  
+  
+  newcols <- c()
+  h <- event$Var1
+  newcols[c(which(Mt[,h]==0))] <- 0
+  newcols[c(which(Mt[,h]==1))] <- sample(c(1,0), 
+                                         size=length(which(Mt[,h]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)))
+  
+  Mt <- cbind(Mt,newcols)
+  return(Mt)
+}
+
+# if cospeciation happends with plant species i and animal species j
+# Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+new_Mt_cospec <- function(Mt, possible_event, p){
+  
+  possible_output <- list(c(1,1), c(1,0), c(0,1))
+  newrows <- list()
+  newcols <- list()
+  h <- event$Var1
+  k <- event$Var2
+  
+  newcols[c(which(Mt[,k]==0))] <- list(c(0,0))
+  newcols[c(which(Mt[,k]==1))] <- sample(possible_output, 
+                                         size=length(which(Mt[,k]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)/2,(1-p)/2))
+  
+  newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
+  
+  newrows[c(which(Mt[h,]==0))] <- list(c(0,0))
+  newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
+                                         size=length(which(Mt[h,]==1)),
+                                         replace = TRUE,
+                                         prob=c(p,(1-p)/2,(1-p)/2))
+  
+  newrows <- matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
+  newrows <- cbind(newrows, diag(1,2,2))
+  Mt <- cbind(Mt,newcols)
+  Mt <- rbind(Mt,newrows)
+  
+  return(Mt)
 }
 

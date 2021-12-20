@@ -1,18 +1,24 @@
 # some functions will be used
+# get mutualistic partners and competitors for animal and plant species
 get_part_compe <- function(Mt,
                            p_status,
                            a_status){
   tMt <- t(Mt) 
-  plant_part <- Mt %*% a_status
-  animal_part <- tMt %*% p_status
+  
+  plant_part <- Mt %*% a_status #the number of partners that each plant species has
+  animal_part <- tMt %*% p_status #the number of partners that each animal species has
+  
   plant_compe <- matrix()
   animal_compe <- matrix()
   for (x in seq(ncol(tMt))){
     plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
-  }
+  }  
+  # the number of competitors of each plant species
+  
   for (x in seq(ncol(Mt))){
     animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
-  }
+  } 
+  # the number of competitors of each animal species
   
   part_compe_list <- list(plant_part = plant_part,
                           animal_part = animal_part,
@@ -21,12 +27,11 @@ get_part_compe <- function(Mt,
   
   return(part_compe_list)
 }
-
+# get N/K
 get_NK <- function(K_par,
                    Mt,
                    p_status,
                    a_status){
-  
   part_compe_list <- get_part_compe(Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
@@ -50,11 +55,13 @@ get_NK <- function(K_par,
   return(NK_list)
 }
 
+# get p_status and a_status expanded
 get_expand_matrix <- function(Mt,
                               p_status,
                               a_status){
   expd_p_sta <- matrix(rep(p_status,NCOL(Mt)), ncol = NCOL(Mt))
   expd_a_sta <- t(matrix(rep(a_status,NROW(Mt)),ncol = NROW(Mt)))
+  
   expand_matrix_list <- list(expd_p_sta = expd_p_sta,
                              expd_a_sta = expd_a_sta)
   return(expand_matrix_list)
@@ -109,14 +116,21 @@ get_ana_rate <- function(laa_par,
                          p_status,
                          a_status,
                          island_spec_plant,
-                         island_spec_animal) {  
+                         island_spec_animal) { 
+  
+  possible_ana_p <- matrix(0,nrow=NROW(M0))
+  possible_ana_a <- matrix(0,nrow=NCOL(M0))
+  plant_ind <-as.numeric(island_spec_plant[which(island_spec_plant[,4]=="I"),1])
+  animal_ind <-as.numeric(island_spec_animal[which(island_spec_animal[,4]=="I"),1])
+  possible_ana_p[plant_ind] == 1
+  possible_ana_a[animal_ind] == 1
   
   plant_ana_rate =  (laa_par[1] + 
                        laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
-    p_status * (island_spec_plant[, 4] == "I")
+    p_status * possible_ana_p
   animal_ana_rate =  (laa_par[3] + 
                         laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * 
-    a_status * (island_spec_animal[, 4] == "I")
+    a_status * possible_ana_a
   
   ana_list <- list(plant_ana_rate = plant_ana_rate,
                    animal_ana_rate = animal_ana_rate)
@@ -196,7 +210,7 @@ get_loss_rate <- function(Mt,
 # M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,1,1)
+# a_status<-c(1,0,0,0,1)
 # qloss <- 0.1
 # qgain <- 0.1
 # 

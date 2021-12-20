@@ -21,7 +21,7 @@
 # K_par <- c(20,0.6,20,0.6)
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,1,1)
+# a_status<-c(1,0,0,0,1)
 #
 
 #get_immig_clado_rate(gam0_lac0_par,K_par,Mt,p_status,a_status)
