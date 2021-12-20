@@ -17,7 +17,7 @@
 # load("rates.Rdata")
 # update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
 #                   M0,Mt,p_status,a_status)
-# event <- possible_event(rates) 
+# possible_event <- possible_event(rates) 
 possible_event <- function(rates){
   
   output <- melt(setNames(rates,seq_along(rates)))
@@ -36,7 +36,7 @@ possible_event <- function(rates){
 
 # rates <- update_rates_mutual(gam0_par,mu_par,laa_par,lac0_par,lambda1,K_par,w,
 #                   M0,Mt,p_status,a_status,qloss,qgain,num_immigrants)
-# timeval <- 1
+# timeval <- 0
 # calc_next_timeval(rates,timeval)
 
 # update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
