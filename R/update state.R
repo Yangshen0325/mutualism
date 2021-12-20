@@ -1,4 +1,4 @@
-# update Mt p_status a_status
+# update state of island given sampled event
 
 # [1]: immigration event with plant species
 # [2]: extinction event with plant species
@@ -12,119 +12,26 @@
 # [10]: gain links event between pairs
 # [11]: loss links event between pairs
 
-# Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# M0 = {set.seed(2);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(1,0,1,1)
-# a_status<-c(1,1,1,1,1)
-# event <- possible_event(rates) #   Var1 Var2 value L1
-#    1    1   0.7  8
-# new Mt if cladogenesis happends with plant species
-new_Mt_clado_p <- function(Mt,event,p){
-  
-  possible_output <- list(c(1,1), c(1,0), c(0,1))
-  newrows <- list()
-  h <- event$Var1
-  newrows[c(which(Mt[h,]==0))] <- list(c(0,0))
-  newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
-                                         size=length(which(Mt[h,]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
-  newrows<-matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
-  
-  Mt <- rbind(Mt,newrows)
-  return(Mt)
-}
-
-# new Mt if anagenesis happends with plant species
-new_Mt_ana_p <- function(Mt,event,p){
-  
-  newrows <- c()
-  h <- event$Var1
-  newrows[c(which(Mt[h,]==0))] <- 0
-  newrows[c(which(Mt[h,]==1))] <- sample(c(1,0), 
-                                         size=length(which(Mt[h,]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)))
-  Mt <- rbind(Mt,newrows)
-  return(Mt)
-}
-# if cladogenesis happends with animal species
-new_Mt_clado_a <- function(Mt,event,p){
-  
-  possible_output <- list(c(1,1), c(1,0), c(0,1))
-  newcols <- list()
-  h <- event$Var1
-  newcols[c(which(Mt[,h]==0))] <- list(c(0,0))
-  newcols[c(which(Mt[,h]==1))] <- sample(possible_output, 
-                                         size=length(which(Mt[,h]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
-  
-  newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
-  Mt <- cbind(Mt,newcols)
-  return(Mt)
-}
-
-# if anagenesis happends with animal species
-# Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-new_Mt_ana_a <- function(Mt,event,p){  
-  
-  newcols <- c()
-  h <- event$Var1
-  newcols[c(which(Mt[,h]==0))] <- 0
-  newcols[c(which(Mt[,h]==1))] <- sample(c(1,0), 
-                                         size=length(which(Mt[,h]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)))
-  
-  Mt <- cbind(Mt,newcols)
-  return(Mt)
-}
-
-# if cospeciation happends with plant species i and animal species j
-# Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-new_Mt_cospec <- function(Mt,event,p){
-  
-  possible_output <- list(c(1,1), c(1,0), c(0,1))
-  newrows <- list()
-  newcols <- list()
-  h <- event$Var1
-  k <- event$Var2
-  
-  newcols[c(which(Mt[,k]==0))] <- list(c(0,0))
-  newcols[c(which(Mt[,k]==1))] <- sample(possible_output, 
-                                         size=length(which(Mt[,k]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
-  
-  newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
-  
-  newrows[c(which(Mt[h,]==0))] <- list(c(0,0))
-  newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
-                                         size=length(which(Mt[h,]==1)),
-                                         replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
-  
-  newrows <- matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
-  newrows <- cbind(newrows, diag(1,2,2))
-  Mt <- cbind(Mt,newcols)
-  Mt <- rbind(Mt,newrows)
-  
-  return(Mt)
-}
+# M0= {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# p_status<-c(0,1,1,0)
+# a_status<-c(1,0,0,0,1)
+# possible_event <- possible_event(rates)  #could be like   Var1 Var2 value L1
+###########################################################  1    1   0.7  8
 
 ######################################################
-# rep.row<-function(x,n){
-#   matrix(rep(x,each=n),nrow=n)}
-# island_spec_plant <-c("NA","NA","NA","I","NA","NA","NA")
-# island_spec_plant <- rep.row(c(island_spec_plant),4)
-# island_spec_plant[c(1,4),4] <- "NA"
+# island_spec_plant <- matrix(ncol = 7)
+# island_spec_plant[1,] <- c(2,2,0,"I",NA,NA,NA)
+# island_spec_plant <- rbind(island_spec_plant, c(3,3,0,"A",NA,NA,NA))
 # 
-# island_spec_animal <-c("NA","NA","NA","I","NA","NA","NA")
-# island_spec_animal <- rep.row(c(island_spec_animal),5)
-# island_spec_animal[c(2,3,4),4] <- "NA"
+# island_spec_animal <- matrix(ncol = 7)
+# island_spec_animal[1,] <- c(1,1,0,"I",NA,NA,NA)
+# island_spec_animal <- rbind(island_spec_animal,c(5,5,0,"A",NA,NA,NA))
 
-#Updates state of island given sampled event
+# stt_table <- matrix(ncol = 7)
+# colnames(stt_table) <- c("Time","nIp","nAp","nCp","nIa","nAa","nCa")
+# stt_table[1,] <- c(totaltime,1,1,0,1,1,0)
+
+#Update state of island given sampled event
 update_state <- function(
   timeval,
   totaltime,
@@ -136,10 +43,11 @@ update_state <- function(
   maxplantID,
   maxanimalID,
   island_spec_plant,
-  island_spec_animal){
+  island_spec_animal,
+  stt_table){
   
   ##########################################
-  # [1]: immigration event with plant species
+  # [1]: immigration event with plant species 
   if(possible_event$L1 == 1){
     
     colonist = possible_event$Var1
@@ -151,13 +59,15 @@ update_state <- function(
     }else{
       isitthere <- c()
     }
-    if(length(isitthere) == 0) {
+    if(length(isitthere) == 0)
+    {
       island_spec_plant <- rbind(island_spec_plant,c(colonist,colonist,timeval,"I",NA,NA,NA))
     }
-    is(length(isitthere) != 0) {
+    if (length(isitthere) != 0) {
       island_spec_plant[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)
     }
   } 
+  
   ##########################################
   # [2]: extinction event with plant species
   if(possible_event$L1 == 2){
@@ -165,38 +75,40 @@ update_state <- function(
     extinct =  possible_event$Var1
     p_status[extinct] <- 0
     
-    typeofspecies = island_spec[extinct,4]
+    ind <- which(island_spec_plant[,1]==extinct)
+    typeofspecies = island_spec_plant[ind,4] 
     
     if(typeofspecies == "I")
     {
-      island_spec = island_spec[-extinct,] #remove immigrant
+      island_spec_plant = island_spec_plant[-ind, ] #remove immigrant
     }
     
     if(typeofspecies == "A")
     {
-      island_spec = island_spec[-extinct,] #remove anagenetic
+      island_spec_plant = island_spec_plant[-ind, ] #remove anagenetic
     }
     
-    if(typeofspecies == "C")
+    if(typeofspecies == "C")##############################
     {
       #remove cladogenetic
       #first find species with same ancestor AND arrival totaltime
-      sisters = intersect(which(island_spec[,2] == island_spec[extinct,2]),which(island_spec[,3] == island_spec[extinct,3]))
-      survivors = sisters[which(sisters != extinct)]
+      sisters = intersect(which(island_spec_plant[,2] == island_spec_plant[ind,2]),
+                          which(island_spec_plant[,3] == island_spec_plant[ind,3]))
+      survivors = sisters[which(sisters != ind)]
       
       if(length(sisters) == 2)
       {
         #survivors status becomes anagenetic
-        island_spec[survivors,4] = "A"
-        island_spec[survivors,c(5,6)] = c(NA,NA)
-        island_spec[survivors,7] = "Clado_extinct"
-        island_spec = island_spec[-extinct, ]
+        island_spec_plant[survivors,4] = "A"
+        island_spec_plant[survivors,c(5,6)] = c(NA,NA)
+        island_spec_plant[survivors,7] = "Clado_extinct"
+        island_spec_plant = island_spec_plant[-ind, ]
       }
       
       if(length(sisters) >= 3)
       {
-        numberofsplits = nchar(island_spec[extinct,5])
-        mostrecentspl = substring(island_spec[extinct,5],numberofsplits)
+        numberofsplits = nchar(island_spec_plant[ind,5])
+        mostrecentspl = substring(island_spec_plant[ind,5],numberofsplits)
         
         if(mostrecentspl=="B")
         {
@@ -207,25 +119,28 @@ update_state <- function(
           sistermostrecentspl = "B"
         }
         
-        motiftofind = paste(substring(island_spec[extinct,5],1,numberofsplits-1),sistermostrecentspl,sep = "")
-        possiblesister = survivors[which(substring(island_spec[survivors,5],1,numberofsplits) == motiftofind)]
+        motiftofind = paste(substring(island_spec_plant[ind,5],1,numberofsplits-1),
+                            sistermostrecentspl,sep = "")
+        possiblesister = survivors[which(substring(island_spec_plant[survivors,5],1,
+                                                   numberofsplits) == motiftofind)]
         
         if(mostrecentspl == "A")
         {
           #change the splitting date of the sister species so that it inherits the early splitting that used to belong to A.
-          
-          tochange = possiblesister[which(island_spec[possiblesister,6] == min(as.numeric(island_spec[possiblesister,6])))]
-          island_spec[tochange,6] = island_spec[extinct,6]
+          tochange = possiblesister[which(island_spec_plant[possiblesister,6] == 
+                                            min(as.numeric(island_spec_plant[possiblesister,6])))]
+          island_spec_plant[tochange,6] = island_spec_plant[ind, 6]
         }
         #remove the offending A/B from these species
-        island_spec[possiblesister,5] = paste(substring(island_spec[possiblesister,5],1,numberofsplits - 1),
-                                              substring(island_spec[possiblesister,5],numberofsplits + 1,
-                                                        nchar(island_spec[possiblesister,5])),sep = "")
-        island_spec = island_spec[-extinct, ]
+        island_spec_plant[possiblesister,5] = paste(substring(island_spec_plant[possiblesister,5],1,numberofsplits - 1),
+                                                    substring(island_spec_plant[possiblesister,5],numberofsplits + 1,
+                                                              nchar(island_spec_plant[possiblesister,5])),sep = "")
+        island_spec_plant = island_spec_plant[-int, ]
       }
     }
-    island_spec = rbind(island_spec)
+    island_spec_plant = rbind(island_spec_plant)
   }
+  
   ##########################################
   # [3]: cladogenesis event with plant species
   if(possible_event$L1 == 3){
@@ -238,39 +153,38 @@ update_state <- function(
     p_status <- c(p_status,1,1)
     
     #if the species that speciates is cladogenetic
-    if(island_spec[ind,4] == "C")
+    if(island_spec_plant[ind,4] == "C")
     {
       #for daughter A
-    
-      island_spec_plant[ind, 1] <- NROW(Mt) + 1
+      island_spec_plant[ind, 1] <- maxplantID + 1
       oldstatus <- island_spec_plant[ind, 5]
       island_spec_plant[ind, 5] = paste(oldstatus,"A",sep = "")
+      island_spec_plant[ind, 6] = timeval
       island_spec_plant[ind, 7] = NA
       
       #for daughter B
-      
-      island_spec_plant <- rbind(island_spec_plant,c(NROW(Mt) + 2,island_spec_plant[ind, 2],island_spec_plant[ind, 3],
-                                        "C",paste(oldstatus,"B",sep = ""),timeval,NA))
-      maxspecID = maxspecID + 2
+      island_spec_plant <- rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind, 2],island_spec_plant[ind, 3],
+                                                     "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+      maxplantID = maxplantID + 2
     } else {
       #if the species that speciates is not cladogenetic
       
       #for daughter A
-      
-      island_spec[tosplit,4] = "C"
-      island_spec[tosplit,1] = maxspecID + 1
-      island_spec[tosplit,5] = "A"
-      island_spec[tosplit,6] = island_spec[tosplit,3]
-      island_spec[tosplit,7] = NA
-      island_spec[tosplit,8] = "1"
+      island_spec_plant[ind, 4] = "C"
+      island_spec_palnt[ind, 1] = maxspecID + 1
+      island_spec_plant[ind, 5] = "A"
+      island_spec_plant[ind, 6] = island_spec_plant[ind, 3]
+      island_spec_plant[ind, 7] = NA
       
       #for daughter B
-      island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[tosplit,2],island_spec[tosplit,3],"C","B",timeval,NA,1))
+      island_spec_plant = rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind, 2],
+                                                    island_spec_plant[ind,3],"C","B",timeval,NA))
       maxspecID = maxspecID + 2
     }
   } 
+  
   ##########################################
-  # [4]: anagenesis event with plant species
+  # [4]: anagenesis event with plant species 
   if(possible_event$L1 == 4){
     
     anagenesis = possible_event$Var1
@@ -280,77 +194,278 @@ update_state <- function(
     p_status <- c(p_status,1)
     
     ind <- which(island_spec_plant[,1]==anagenesis)
-    island_spec_plant[ind,4] = "A"
-    island_spec_plant[ind,1] = maxplantID
-    island_spec_plant[ind,7] = "Immig_parent"
- 
+    island_spec_plant[ind, 4] = "A"
+    island_spec_plant[ind, 1] = maxplantID + 1
+    island_spec_plant[ind, 7] = "Immig_parent"
+    
+    maxplantID <- maxplantID + 1
   } 
-    if(possible_event$L1 == 5){# [5]: immigration event with animal species
+  
+  ##########################################
+  # [5]: immigration event with animal species
+  if(possible_event$L1 == 5){
+    
+    colonist <- possible_event$Var1
+    a_status[colonist] <- 1
+    
+    if (length(island_spec_animal[,1]) != 0)
+    {
+      isitthere <- which(island_spec_animal[,1] == colonist)
+    }else{
+      isitthere <- c()
+    }
+    if(length(isitthere) == 0) {
+      island_spec_animal <- rbind(island_spec_animal,c(colonist,colonist,timeval,"I",NA,NA,NA))
+    }
+    if(length(isitthere) != 0) {
+      island_spec_animal[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA)
+    }
+  }
+  
+  ##########################################
+  # [6]: extinction event with animal species
+  if(possible_event$L1 == 6){
+    
+    extinct <- possible_event$Var1
+    a_status[extinct] <- 0
+    
+    ind <- which(island_spec_animal[,1]==extinct)
+    typeofspecies = island_spec_animal[ind,4]
+    
+    if(typeofspecies == "I")
+    {
+      island_spec_animal = island_spec_animal[-ind, ] #remove immigrant
+    }
+    
+    if(typeofspecies == "A")
+    {
+      island_spec_animal = island_spec_animal[-ind, ] #remove anagenetic
+    }
+    
+    if(typeofspecies == "C")
+    {
+      #remove cladogenetic
+      #first find species with same ancestor AND arrival totaltime
+      sisters = intersect(which(island_spec_animal[,2] == island_spec_animal[ind,2]),
+                          which(island_spec_animal[,3] == island_spec_animal[ind,3]))
+      survivors = sisters[which(sisters != ind)]
       
-      Mt <- Mt # can be deleted
-      h <- event$Var1
-      p_status <- p_status # can be deleted
-      a_status[h] <- 1
+      if(length(sisters) == 2)
+      {
+        #survivors status becomes anagenetic
+        island_spec_animal[survivors,4] = "A"
+        island_spec_animal[survivors,c(5,6)] = c(NA,NA)
+        island_spec_animal[survivors,7] = "Clado_extinct"
+        island_spec_animal = island_spec_animal[-ind, ]
+      }
       
-    } else
-      if(event$L1 == 6){# [6]: extinction event with animal species
+      if(length(sisters) >= 3)
+      {
+        numberofsplits = nchar(island_spec_animal[ind,5])
+        mostrecentspl = substring(island_spec_animal[ind,5],numberofsplits)
         
-        Mt <- Mt # can be deleted
-        h <- event$Var1
-        p_status <- p_status # can be deleted
-        a_status[h] <- 0
+        if(mostrecentspl=="B")
+        {
+          sistermostrecentspl = "A"
+        }
+        if(mostrecentspl=="A")
+        {
+          sistermostrecentspl = "B"
+        }
         
-      } else 
-        if(event$L1 == 7){# [7]: cladogenesis event with animal species
-          
-          Mt <- new_Mt_clado_a(Mt=Mt,event=event,p=p)
-          p_status <- p_status # can be deleted
-          h <- event$Var1
-          a_status[h] <- 0
-          a_status <- c(a_status,1,1)
-          
-        } else
-          if(event$L1 == 8){# [8]: anagenesis event with animal species
-            
-            Mt <- new_Mt_ana_a(Mt=Mt,event=event,p=p)
-            p_status <- p_status # can be deleted
-            h <- event$Var1
-            a_status[h] <- 0
-            a_status <- c(a_status,1)
-            
-          } else 
-            if(event$L1 == 9){# [9]: cospeciation event between pairs
-              
-              Mt <- new_Mt_cospec(Mt=Mt,event=event,p=p)
-              h <- event$Var1
-              k <- event$Var2
-              p_status[h] <- 0
-              a_status[k] <- 0
-              p_status <- c(p_status,1,1)
-              a_status <- c(a_status,1,1)
-              
-            } else 
-              if(event$L1 == 10){# [10]: gain links event between pairs
-                
-                h <- event$Var1
-                k <- event$Var2
-                Mt[h,k] == 1
-                p_status <- p_status # can be deleted
-                a_status <- a_status # can be deleted
-                
-              } else 
-                if(event$L1 == 11){# [11]: loss links event between pairs
-                  
-                  h <- event$Var1
-                  k <- event$Var2
-                  Mt[h,k] == 1
-                  p_status <- p_status # can be deleted
-                  a_status <- a_status # can be deleted
-                  
-                }
-  new_state <- list(Mt = Mt,
-                    p_status = p_status,
-                    a_status = a_status)
-  return(new_state)
+        motiftofind = paste(substring(island_spec_animal[ind,5],1,numberofsplits-1),
+                            sistermostrecentspl,sep = "")
+        possiblesister = survivors[which(substring(island_spec_animal[survivors,5],1,
+                                                   numberofsplits) == motiftofind)]
+        
+        if(mostrecentspl == "A")
+        {
+          #change the splitting date of the sister species so that it inherits the early splitting that used to belong to A.
+          tochange = possiblesister[which(island_spec_animal[possiblesister,6] == 
+                                            min(as.numeric(island_spec_animal[possiblesister,6])))]
+          island_spec_animal[tochange,6] = island_spec_animal[ind, 6]
+        }
+        #remove the offending A/B from these species
+        island_spec_animal[possiblesister,5] = paste(substring(island_spec_animal[possiblesister,5],1,numberofsplits - 1),
+                                                     substring(island_spec_animal[possiblesister,5],numberofsplits + 1,
+                                                               nchar(island_spec_animal[possiblesister,5])),sep = "")
+        island_spec_animal = island_spec_animal[-int, ]
+      }
+    }
+    island_spec_animal = rbind(island_spec_animal)
+  }
+  
+  ##########################################
+  # [7]: cladogenesis event with animal species
+  if(possible_event$L1 == 7){
+    
+    tosplit <- possible_event$Var1
+    ind <- which(island_spec_animal[,1]==tosplit)
+    
+    Mt <- new_Mt_clado_a(Mt=Mt,possible_event=possible_event,p=p)
+    a_status[tosplit] <- 0
+    a_status <- c(a_status,1,1)
+    #if the species that speciates is cladogenetic
+    if(island_spec_animal[ind,4] == "C")
+    {
+      #for daughter A
+      island_spec_animal[ind, 1] <- maxanimalID + 1
+      oldstatus <- island_spec_animal[ind, 5]
+      island_spec_animal[ind, 5] = paste(oldstatus,"A",sep = "")
+      island_spec_animal[ind, 6] = timeval
+      island_spec_animal[ind, 7] = NA
+      
+      #for daughter B
+      island_spec_animal <- rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind, 2],island_spec_animal[ind, 3],
+                                                       "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+      maxanimalID = maxanimalID + 2
+    } else {
+      #if the species that speciates is not cladogenetic
+      
+      #for daughter A
+      island_spec_animal[ind, 4] = "C"
+      island_spec_animal[ind, 1] = maxanimalID + 1
+      island_spec_animal[ind, 5] = "A"
+      island_spec_animal[ind, 6] = island_spec_animal[ind, 3]
+      island_spec_animal[ind, 7] = NA
+      
+      #for daughter B
+      island_spec_animal = rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind, 2],
+                                                      island_spec_animal[ind,3],"C","B",timeval,NA))
+      maxanimalID = maxanimalID + 2
+    }
+  }
+  
+  ##########################################
+  # [8]: anagenesis event with animal species
+  if(possible_event$L1 == 8){
+    
+    anagenesis <- possible_event$Var1
+    
+    Mt <- new_Mt_ana_a(Mt=Mt,possible_event=possible_event,p=p)
+    a_status[anagenesis] <- 0
+    a_status <- c(a_status,1)
+    
+    ind <- which(island_spec_animal[,1]==anagenesis)
+    island_spec_animal[ind, 4] = "A"
+    island_spec_animal[ind, 1] = maxanimalID + 1
+    island_spec_animal[ind, 7] = "Immig_parent"
+    
+    maxanimalID <- maxanimalID + 1
+  }
+  
+  ##########################################
+  # [9]: cospeciation event between pairs
+  if(possible_event$L1 == 9){
+    
+    cospec_plant <- possible_event$Var1
+    cospec_animal <- possible_event$Var2
+    ind1 <- which(island_spec_plant[, 1] == cospec_plant)
+    ind2 <- which(island_spec_animal[, 1] == cospec_animal)
+    
+    Mt <- new_Mt_cospec(Mt=Mt,possible_event=possible_event,p=p)
+    p_status[coplant] <- 0
+    a_status[coanimal] <- 0
+    p_status <- c(p_status,1,1)
+    a_status <- c(a_status,1,1)
+    
+    #for plant species, is the species that speciates is cladogenetic
+    if(island_spec_plant[ind1,4] == "C")
+    {
+      #for daughter A
+      island_spec_plant[ind1, 1] <- maxplantID + 1
+      oldstatus <- island_spec_plant[ind1, 5]
+      island_spec_plant[ind1, 5] = paste(oldstatus,"A",sep = "")
+      island_spec_plant[ind1, 6] = timeval
+      island_spec_plant[ind1, 7] = NA
+      
+      #for daughter B
+      island_spec_plant <- rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind1, 2],island_spec_plant[ind1, 3],
+                                                     "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+      maxplantID = maxplantID + 2
+    } else {
+      #if the species that speciates is not cladogenetic
+      
+      #for daughter A
+      island_spec_plant[ind1, 4] = "C"
+      island_spec_palnt[ind1, 1] = maxspecID + 1
+      island_spec_plant[ind1, 5] = "A"
+      island_spec_plant[ind1, 6] = island_spec_plant[ind1, 3]
+      island_spec_plant[ind1, 7] = NA
+      
+      #for daughter B
+      island_spec_plant = rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind1, 2],
+                                                    island_spec_plant[ind1,3],"C","B",timeval,NA))
+      maxspecID = maxspecID + 2
+    }
+    #for animal species, if the species that speciates is cladogenetic
+    
+    if(island_spec_animal[ind2,4] == "C")
+    {
+      #for daughter A
+      island_spec_animal[ind2, 1] <- maxanimalID + 1
+      oldstatus <- island_spec_animal[ind2, 5]
+      island_spec_animal[ind2, 5] = paste(oldstatus,"A",sep = "")
+      island_spec_animal[ind2, 6] = timeval
+      island_spec_animal[ind2, 7] = NA
+      
+      #for daughter B
+      island_spec_animal <- rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind2, 2],island_spec_animal[ind2, 3],
+                                                       "C",paste(oldstatus,"B",sep = ""),timeval,NA))
+      maxanimalID = maxanimalID + 2
+    } else {
+      #if the species that speciates is not cladogenetic
+      
+      #for daughter A
+      island_spec_animal[ind2, 4] = "C"
+      island_spec_animal[ind2, 1] = maxanimalID + 1
+      island_spec_animal[ind2, 5] = "A"
+      island_spec_animal[ind2, 6] = island_spec_animal[ind2, 3]
+      island_spec_animal[ind2, 7] = NA
+      
+      #for daughter B
+      island_spec_animal = rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind2, 2],
+                                                      island_spec_animal[ind2,3],"C","B",timeval,NA))
+      maxanimalID = maxanimalID + 2
+    }
+  }
+  
+  ##########################################
+  # [10]: gain links event between pairs
+  if(possible_event$L1 == 10){
+    
+    togain_plant <- possible_event$Var1
+    togain_animal <- possible_event$Var2
+    Mt[togain_plant,togain_animal] == 1
+  } 
+  
+  ##########################################
+  # [11]: lose links event between pairs
+  if(possible_event$L1 == 11){# [11]: loss links event between pairs
+    
+    tolose_plant <- possible_event$Var1
+    tolose_animal <- possible_event$Var2
+    Mt[tolose_plant,tolose_animal] == 0
+  }
+  
+  ##########################################
+  stt_table <- rbind(stt_table,
+                     c(totaltime - timeval,
+                       length(which(island_spec_plant[, 4] == "I")),
+                       length(which(island_spec_plant[, 4] == "A")),
+                       length(which(island_spec_plant[, 4] == "C")),
+                       length(which(island_spec_animal[, 4] == "I")),
+                       length(which(island_spec_animal[, 4] == "A")),
+                       length(which(island_spec_animal[, 4] == "C"))))
+  
+  updated_state <- list(Mt = Mt,
+                        p_status = p_status,
+                        a_status = a_status,
+                        island_spec_plant = island_spec_plant,
+                        island_spec_animal = island_spec_animal,
+                        maxplantID = maxplantID,
+                        maxanimalID = maxanimalID,
+                        stt_table = stt_table)
+  return(updated_state)
 }
 
