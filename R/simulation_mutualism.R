@@ -1,10 +1,13 @@
 # Internal function of the DAISIE simulation
 
-DAISIE_sim_core_mutualism < function(
+DAISIE_sim_core_mutualism <- function(
   time,
   M0,
+  p_status,
+  a_status,
   gam0_lac0_par,
-  K_par,mu_par,
+  K_par,
+  mu_par,
   laa_par,
   lambda1,
   qloss,

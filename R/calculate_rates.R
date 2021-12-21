@@ -204,7 +204,6 @@ get_loss_rate <- function(Mt,
 # gam0_lac0_par <- c(0.6,0.6,0.3,0.3)
 # mu_par <- c(0.02,0.01,0.02,0.01)
 # laa_par <- c(0.1,0.2,0.1,0.2)
-# lac0_par <- c(0.3,0.3)
 # lambda1 <- 0.1
 # K_par <- c(20,0.6,20,0.6)
 # M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
