@@ -24,15 +24,18 @@
 
 get_cospec_rate <- function(lambda1,
                             K_par,
+                            M0,
                             Mt,
                             p_status,
                             a_status){
   
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
   NK_list <- get_NK(K_par=K_par,
+                    M0=M0,
                     Mt=Mt,
                     p_status= p_status,
                     a_status= a_status)
@@ -42,8 +45,8 @@ get_cospec_rate <- function(lambda1,
                                           a_status = a_status)
   
   cospec_rate <- lambda1 * Mt * expand_matrix_list[[1]] * expand_matrix_list[[2]] *
-    matrix(rep(NK_list[[1]],NCOL(Mt)), ncol = NCOL(Mt)) *
-    t(matrix(rep(NK_list[[2]],NROW(Mt)),ncol = NROW(Mt)))
+    matrix(rep(NK_list[[3]],NCOL(Mt)), ncol = NCOL(Mt)) *
+    t(matrix(rep(NK_list[[4]],NROW(Mt)),ncol = NROW(Mt)))
   
   return(cospec_rate)
 }
