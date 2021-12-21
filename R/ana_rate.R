@@ -37,17 +37,18 @@ get_ana_rate <- function(laa_par,
   
   possible_ana_p <- matrix(0,nrow=NROW(M0))
   possible_ana_a <- matrix(0,nrow=NCOL(M0))
+  
   plant_ind <-as.numeric(island_spec_plant[which(island_spec_plant[,4]=="I"),1])
   animal_ind <-as.numeric(island_spec_animal[which(island_spec_animal[,4]=="I"),1])
-  possible_ana_p[plant_ind] == 1
-  possible_ana_a[animal_ind] == 1
+  possible_ana_p[plant_ind] = 1
+  possible_ana_a[animal_ind] = 1
   
   plant_ana_rate =  (laa_par[1] + 
                        laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
-    p_status * possible_ana_p
+    p_status[1:NROW(M0)] * possible_ana_p
   animal_ana_rate =  (laa_par[3] + 
                         laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * 
-    a_status * possible_ana_a
+    a_status[1:NCOL(M0)] * possible_ana_a
   
   ana_list <- list(plant_ana_rate = plant_ana_rate,
                    animal_ana_rate = animal_ana_rate)
