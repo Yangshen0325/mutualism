@@ -8,27 +8,49 @@ get_part_compe <- function(M0,
                            Mt,
                            p_status,
                            a_status){
-  tMt <- t(Mt[1:NROW(M0),1:NCOL(M0)]) 
   
-  plant_part <- Mt[1:NROW(M0),1:NCOL(M0)] %*% a_status[1:NCOL(M0)] #the number of partners that each plant species has
-  animal_part <- tMt %*% p_status[1:NROW(M0)] #the number of partners that each animal species has
+  tMtforimmig <- t(Mt[1:NROW(M0),1:NCOL(M0)]) 
+  tMtforspecia <-t(Mt)
   
-  plant_compe <- matrix()
-  animal_compe <- matrix()
-  for (x in seq(ncol(tMt))){
-    plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status[1:NCOL(M0)])>=1) * as.matrix(p_status[1:NROW(M0)])[-x,])
+  plant_part_forimmig <- Mt[1:NROW(M0),1:NCOL(M0)] %*% a_status[1:NCOL(M0)] #the number of partners that each mainland plant species has
+  animal_part_forimmig <- tMtforimmig %*% p_status[1:NROW(M0)] #the number of partners that each mainland animal species has
+  
+  plant_part_forspecia <- Mt %*% a_status
+  animal_part_forspecia <- tMtforspecia %*% p_status
+  
+  plant_compe_forimmig <- matrix()
+  animal_compe_forimmig <- matrix()
+  
+  plant_compe_forspecia <- matrix()
+  animal_compe_forspecia <- matrix()
+  
+  for (x in seq(ncol(tMtforimmig))){
+    plant_compe_forimmig[x] <- sum((colSums(tMtforimmig[,x]*tMtforimmig[,-x]* a_status[1:NCOL(M0)])>=1) * as.matrix(p_status[1:NROW(M0)])[-x,])
   }  
-  # the number of competitors of each plant species
+  # the number of competitors of each plant species that comes from mainland
+  
+  for (x in seq(ncol(tMtforspecia))){
+    plant_compe_forspecia[x] <- sum((colSums(tMtforspecia[,x]*tMtforspecia[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
+  } 
+  # the number of competitors of each plant species that are shown on island
   
   for (x in seq(ncol(Mt[1:NROW(M0),1:NCOL(M0)]))){
-    animal_compe[x] <- sum((colSums(Mt[1:NROW(M0),1:NCOL(M0)][,x] * Mt[1:NROW(M0),1:NCOL(M0)][,-x]* p_status[1:NROW(M0)])>=1) * as.matrix(a_status[1:NCOL(M0)])[-x,])
+    animal_compe_forimmig[x] <- sum((colSums(Mt[1:NROW(M0),1:NCOL(M0)][,x] * Mt[1:NROW(M0),1:NCOL(M0)][,-x]* p_status[1:NROW(M0)])>=1) * as.matrix(a_status[1:NCOL(M0)])[-x,])
   } 
-  # the number of competitors of each animal species
+  # the number of competitors of each animal species that comes from mainland
+  for (x in seq(ncol(Mt))){
+    animal_compe_forspecia[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
+  } 
   
-  part_compe_list <- list(plant_part = plant_part,
-                          animal_part = animal_part,
-                          plant_compe = plant_compe,
-                          animal_compe = animal_compe)
+  part_compe_list <- list(plant_part_forimmig = plant_part_forimmig,     #[[1]] plant partners used for immigration
+                          animal_part_forimmig = animal_part_forimmig,   #[[2]] aniaml partners used for immigration
+                          plant_part_forspecia = plant_part_forspecia,   #[[3]] plant partners used for speciation
+                          animal_part_forspecia = animal_part_forspecia, #[[4]] aniaml partners used for speciation
+                         
+                          plant_compe_forimmig = plant_compe_forimmig,   #[[5]] plant competitors used for immigration
+                          animal_compe_forimmig = animal_compe_forimmig, #[[6]] animal competitors used for immigration
+                          plant_compe_forspecia = plant_compe_forspecia, #[[7]] plant competitors used for speciation
+                          animal_compe_forspecia = animal_compe_forspecia)#[[8]] animal competitors used for speciation
   
   return(part_compe_list)
 }
@@ -39,7 +61,7 @@ get_part_compe <- function(M0,
 # KP1: a coefficient showing the influence from mutualism to plant species
 # KA1: a coefficient showing the influence from mutualism to animal species
 # K_par <- c(20,0.6,20,0.6)
-# get_NK(K_par,M0, p_status,a_status)
+# get_NK(K_par,M0,Mt, p_status,a_status)
 get_NK <- function(K_par,
                    M0,
                    Mt,
@@ -50,21 +72,36 @@ get_NK <- function(K_par,
                                     p_status= p_status,
                                     a_status= a_status)
   
-  indp <- which(part_compe_list[[1]]==0)
-  inda <- which(part_compe_list[[2]]==0)
+  indp_immig <- which(part_compe_list[[1]]==0)
+  inda_immig <- which(part_compe_list[[2]]==0)
   
-      plant_NK <- exp(-(sum(p_status)/K_par[1])+
-                           part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
-      plant_NK[indp] <- exp(-(sum(p_status)/K_par[1]))
+      plant_NK_forimmig <- exp(-(sum(p_status)/K_par[1])+
+                           part_compe_list[[5]]/(K_par[2]*part_compe_list[[1]]))
+      plant_NK_forimmig[indp_immig] <- exp(-(sum(p_status)/K_par[1]))
  
  
-      animal_NK <- exp(-(sum(a_status)/K_par[3])+
-                            part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]])) 
-      animal_NK[inda] <- exp(-(sum(a_status)/K_par[3]))
-
+      animal_NK_forimmig <- exp(-(sum(a_status)/K_par[3])+
+                            part_compe_list[[6]]/(K_par[4]*part_compe_list[[2]])) 
+      animal_NK_forimmig[inda_immig] <- exp(-(sum(a_status)/K_par[3]))
+      
+      ##############
+      
+      indp_specia <- which(part_compe_list[[3]]==0)
+      inda_specia <- which(part_compe_list[[4]]==0)
+      
+      plant_NK_forspecia <- exp(-(sum(p_status)/K_par[1])+
+                                 part_compe_list[[7]]/(K_par[2]*part_compe_list[[3]]))
+      plant_NK_forspecia[indp_specia] <- exp(-(sum(p_status)/K_par[1]))
+      
+      
+      animal_NK_forspecia <- exp(-(sum(a_status)/K_par[3])+
+                                  part_compe_list[[8]]/(K_par[4]*part_compe_list[[4]])) 
+      animal_NK_forspecia[inda_specia] <- exp(-(sum(a_status)/K_par[3]))
   
-  NK_list <- list(plant_NK = plant_NK,
-                  animal_NK = animal_NK)
+  NK_list <- list(plant_NK_forimmig = plant_NK_forimmig,
+                  animal_NK_forimmig = animal_NK_forimmig,
+                  plant_NK_forspecia = plant_NK_forspecia,
+                  animal_NK_forspecia = animal_NK_forspecia)
   
   return(NK_list)
 }
