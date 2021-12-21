@@ -2,25 +2,26 @@
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
 # a_status<-c(1,0,0,0,1)
-# get_part_compe(Mt, p_status,a_status)
+# get_part_compe(M0,Mt, p_status,a_status)
 
-get_part_compe <- function(Mt,
+get_part_compe <- function(M0,
+                           Mt,
                            p_status,
                            a_status){
-  tMt <- t(Mt) 
+  tMt <- t(Mt[1:NROW(M0),1:NCOL(M0)]) 
   
-  plant_part <- Mt %*% a_status #the number of partners that each plant species has
-  animal_part <- tMt %*% p_status #the number of partners that each animal species has
+  plant_part <- Mt[1:NROW(M0),1:NCOL(M0)] %*% a_status[1:NCOL(M0)] #the number of partners that each plant species has
+  animal_part <- tMt %*% p_status[1:NROW(M0)] #the number of partners that each animal species has
   
   plant_compe <- matrix()
   animal_compe <- matrix()
   for (x in seq(ncol(tMt))){
-    plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
+    plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status[1:NCOL(M0)])>=1) * as.matrix(p_status[1:NROW(M0)])[-x,])
   }  
   # the number of competitors of each plant species
   
-  for (x in seq(ncol(Mt))){
-    animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
+  for (x in seq(ncol(Mt[1:NROW(M0),1:NCOL(M0)]))){
+    animal_compe[x] <- sum((colSums(Mt[1:NROW(M0),1:NCOL(M0)][,x] * Mt[1:NROW(M0),1:NCOL(M0)][,-x]* p_status[1:NROW(M0)])>=1) * as.matrix(a_status[1:NCOL(M0)])[-x,])
   } 
   # the number of competitors of each animal species
   
@@ -40,10 +41,12 @@ get_part_compe <- function(Mt,
 # K_par <- c(20,0.6,20,0.6)
 # get_NK(K_par,M0, p_status,a_status)
 get_NK <- function(K_par,
+                   M0,
                    Mt,
                    p_status,
                    a_status){
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
@@ -83,7 +86,7 @@ new_Mt_clado_p <- function(Mt, possible_event, p){
   
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newrows <- list()
-  h <- event$Var1
+  h <- possible_event$Var1
   newrows[c(which(Mt[h,]==0))] <- list(c(0,0))
   newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[h,]==1)),
@@ -99,7 +102,7 @@ new_Mt_clado_p <- function(Mt, possible_event, p){
 new_Mt_ana_p <- function(Mt, possible_event, p){
   
   newrows <- c()
-  h <- event$Var1
+  h <- possible_event$Var1
   newrows[c(which(Mt[h,]==0))] <- 0
   newrows[c(which(Mt[h,]==1))] <- sample(c(1,0), 
                                          size=length(which(Mt[h,]==1)),
@@ -113,7 +116,7 @@ new_Mt_clado_a <- function(Mt, possible_event, p){
   
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newcols <- list()
-  h <- event$Var1
+  h <- possible_event$Var1
   newcols[c(which(Mt[,h]==0))] <- list(c(0,0))
   newcols[c(which(Mt[,h]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[,h]==1)),
@@ -130,7 +133,7 @@ new_Mt_clado_a <- function(Mt, possible_event, p){
 new_Mt_ana_a <- function(Mt, possible_event, p){  
   
   newcols <- c()
-  h <- event$Var1
+  h <- possible_event$Var1
   newcols[c(which(Mt[,h]==0))] <- 0
   newcols[c(which(Mt[,h]==1))] <- sample(c(1,0), 
                                          size=length(which(Mt[,h]==1)),
@@ -148,8 +151,8 @@ new_Mt_cospec <- function(Mt, possible_event, p){
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newrows <- list()
   newcols <- list()
-  h <- event$Var1
-  k <- event$Var2
+  h <- possible_event$Var1
+  k <- possible_event$Var2
   
   newcols[c(which(Mt[,k]==0))] <- list(c(0,0))
   newcols[c(which(Mt[,k]==1))] <- sample(possible_output, 
