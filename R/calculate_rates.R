@@ -1,95 +1,26 @@
-# some functions will be used
-# get mutualistic partners and competitors for animal and plant species
-get_part_compe <- function(Mt,
+
+#immigration rate
+get_immig_rate <- function(gam0_par,
+                           K_par,
+                           Mt,
+                           M0,
                            p_status,
                            a_status){
-  tMt <- t(Mt) 
-  
-  plant_part <- Mt %*% a_status #the number of partners that each plant species has
-  animal_part <- tMt %*% p_status #the number of partners that each animal species has
-  
-  plant_compe <- matrix()
-  animal_compe <- matrix()
-  for (x in seq(ncol(tMt))){
-    plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
-  }  
-  # the number of competitors of each plant species
-  
-  for (x in seq(ncol(Mt))){
-    animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
-  } 
-  # the number of competitors of each animal species
-  
-  part_compe_list <- list(plant_part = plant_part,
-                          animal_part = animal_part,
-                          plant_compe = plant_compe,
-                          animal_compe = animal_compe)
-  
-  return(part_compe_list)
-}
-# get N/K
-get_NK <- function(K_par,
-                   Mt,
-                   p_status,
-                   a_status){
-  part_compe_list <- get_part_compe(Mt=Mt,
-                                    p_status= p_status,
-                                    a_status= a_status)
-  
-  indp <- which(part_compe_list[[1]]==0)
-  inda <- which(part_compe_list[[2]]==0)
-  
-  plant_NK <- exp(-(sum(p_status)/K_par[1])+
-                    part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
-  plant_NK[indp] <- exp(-(sum(p_status)/K_par[1]))
-  
-  
-  animal_NK <- exp(-(sum(a_status)/K_par[3])+
-                     part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]])) 
-  animal_NK[inda] <- exp(-(sum(a_status)/K_par[3]))
-  
-  
-  NK_list <- list(plant_NK = plant_NK,
-                  animal_NK = animal_NK)
-  
-  return(NK_list)
-}
-
-# get p_status and a_status expanded
-get_expand_matrix <- function(Mt,
-                              p_status,
-                              a_status){
-  expd_p_sta <- matrix(rep(p_status,NCOL(Mt)), ncol = NCOL(Mt))
-  expd_a_sta <- t(matrix(rep(a_status,NROW(Mt)),ncol = NROW(Mt)))
-  
-  expand_matrix_list <- list(expd_p_sta = expd_p_sta,
-                             expd_a_sta = expd_a_sta)
-  return(expand_matrix_list)
-}
-
-#immigration rate and cladogenesis rate
-get_immig_clado_rate <- function(gam0_lac0_par,
-                                 K_par,
-                                 Mt,
-                                 p_status,
-                                 a_status){
   
   NK_list <- get_NK(K_par=K_par,
+                    M0=M0,
                     Mt=Mt,
                     p_status= p_status,
                     a_status= a_status)
   
-  plant_immig_rate <- gam0_lac0_par[1] * NK_list[[1]]
-  animal_immig_rate <- gam0_lac0_par[2] * NK_list[[2]]
+  plant_immig_rate <- gam0_par[1] * NK_list[[1]] 
+  animal_immig_rate <- gam0_par[2] * NK_list[[2]]
   
-  plant_clado_rate <- gam0_lac0_par[3] * NK_list[[1]] * p_status
-  animal_clado_rate <- gam0_lac0_par[4] * NK_list[[2]] *a_status
   
-  immig_clado_list <- list(plant_immig_rate = plant_immig_rate,
-                           animal_immig_rate = animal_immig_rate,
-                           plant_clado_rate = plant_clado_rate,
-                           animal_clado_rate = animal_clado_rate)
-  return(immig_clado_list)
+  immig_list <- list(plant_immig_rate = plant_immig_rate,
+                     animal_immig_rate = animal_immig_rate)
+  
+  return(immig_list)
 }
 
 #extinction rate
@@ -98,12 +29,13 @@ get_ext_rate <- function(mu_par,
                          p_status,
                          a_status) {
   
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
-  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[1]])) * p_status
-  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[2]])) *a_status
+  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[3]])) * p_status
+  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[4]])) *a_status
   
   ext_list <- list(plant_ext_rate = plant_ext_rate,
                    animal_ext_rate = animal_ext_rate)
@@ -138,18 +70,46 @@ get_ana_rate <- function(laa_par,
   return(ana_list)
 }
 
+#cladogenetic  rate
+get_clado_rate <- function(lac0_par,
+                           K_par,
+                           Mt,
+                           M0,
+                           p_status,
+                           a_status){
+  
+  NK_list <- get_NK(K_par=K_par,
+                    M0=M0,
+                    Mt=Mt,
+                    p_status= p_status,
+                    a_status= a_status)
+  
+  plant_clado_rate <- lac0_par[1] * NK_list[[3]] * p_status
+  animal_clado_rate <- lac0_par[2] * NK_list[[4]] *a_status
+  
+  
+  clado_list <- list(plant_clado_rate = plant_clado_rate,
+                     animal_clado_rate = animal_clado_rate)
+  
+  return(clado_list)
+}
+
+
 #cospeciation rate
 get_cospec_rate <- function(lambda1,
                             K_par,
+                            M0,
                             Mt,
                             p_status,
                             a_status){
   
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
   NK_list <- get_NK(K_par=K_par,
+                    M0=M0,
                     Mt=Mt,
                     p_status= p_status,
                     a_status= a_status)
@@ -159,8 +119,8 @@ get_cospec_rate <- function(lambda1,
                                           a_status = a_status)
   
   cospec_rate <- lambda1 * Mt * expand_matrix_list[[1]] * expand_matrix_list[[2]] *
-    matrix(rep(NK_list[[1]],NCOL(Mt)), ncol = NCOL(Mt)) *
-    t(matrix(rep(NK_list[[2]],NROW(Mt)),ncol = NROW(Mt)))
+    matrix(rep(NK_list[[3]],NCOL(Mt)), ncol = NCOL(Mt)) *
+    t(matrix(rep(NK_list[[4]],NROW(Mt)),ncol = NROW(Mt)))
   
   return(cospec_rate)
 }
@@ -202,7 +162,8 @@ get_loss_rate <- function(Mt,
 #
 #example
 
-# gam0_lac0_par <- c(0.6,0.6,0.3,0.3)
+# gam0_par <- c(0.6,0.6)
+# lac0_par <- c(00.3,0.3)
 # mu_par <- c(0.02,0.01,0.02,0.01)
 # laa_par <- c(0.1,0.2,0.1,0.2)
 # lambda1 <- 0.1
@@ -214,20 +175,12 @@ get_loss_rate <- function(Mt,
 # qloss <- 0.1
 # qgain <- 0.1
 # 
-# rep.row<-function(x,n){
-#   matrix(rep(x,each=n),nrow=n)}
-# island_spec_plant <-c("NA","NA","NA","I","NA","NA","NA")
-# island_spec_plant <- rep.row(c(island_spec_plant),4)
-# island_spec_plant[c(1,4),4] <- "NA"
-# 
-# island_spec_animal <-c("NA","NA","NA","I","NA","NA","NA")
-# island_spec_animal <- rep.row(c(island_spec_animal),5)
-# island_spec_animal[c(2,3,4),4] <- "NA"
 
-# rates <-update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                M0,Mt,p_status,a_status,island_spec_plant,island_spec_animal)
+rates <-update_rates_mutual(gam0_par,lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,M0,
+               Mt,p_status,a_status,island_spec_plant,island_spec_animal)
 
-update_rates_mutual <- function(gam0_lac0_par,
+update_rates_mutual <- function(gam0_par,
+                                lac0_par,
                                 K_par,
                                 mu_par,
                                 laa_par,
@@ -241,11 +194,13 @@ update_rates_mutual <- function(gam0_lac0_par,
                                 island_spec_plant,
                                 island_spec_animal) {
   
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
   NK_list <- get_NK(K_par=K_par,
+                    M0=M0,
                     Mt=Mt,
                     p_status= p_status,
                     a_status= a_status)
@@ -254,11 +209,12 @@ update_rates_mutual <- function(gam0_lac0_par,
                                           p_status = p_status,
                                           a_status = a_status)
   
-  #immigration rate and cladogenesis rate
-  immig_clado_list <- get_immig_clado_rate(
-    gam0_lac0_par = gam0_lac0_par,
+  #immigration rate
+  immig_rate <- get_immig_rate(
+    gam0_par = gam0_par,
     K_par = K_par,
     Mt = Mt,
+    M0 = M0,
     p_status = p_status,
     a_status = a_status)
   #testit::assert(is.list(immig_clado_list)) 
@@ -282,10 +238,20 @@ update_rates_mutual <- function(gam0_lac0_par,
     island_spec_animal = island_spec_animal)
   #testit::assert(is.list(ana_rate))
   
+  #cladogenetic rate
+  clado_rate <- get_clado_rate(
+    lac0_par = lac0_par,
+    K_par = K_par,
+    Mt = Mt,
+    M0 =M0,
+    p_status = p_status,
+    a_status = a_status)
+  
   #cospeciation rate
   cospec_rate <- get_cospec_rate(
     lambda1 = lambda1,
     K_par = K_par,
+    M0 = M0,
     Mt = Mt,
     p_status = p_status,
     a_status = a_status)
@@ -308,13 +274,13 @@ update_rates_mutual <- function(gam0_lac0_par,
   #testit::assert(is.matrix(loss_rate))
   
   rates <- list(
-    p_immig_rate = immig_clado_list$plant_immig_rate,
+    p_immig_rate = immig_rate$plant_immig_rate,
     p_ext_rate = ext_rate$plant_ext_rate,
-    p_clado_rate = immig_clado_list$plant_clado_rate,
+    p_clado_rate = clado_rate$plant_clado_rate,
     p_ana_rate = ana_rate$plant_ana_rate,
-    a_immig_rate = immig_clado_list$animal_immig_rate,
+    a_immig_rate = immig_rate$animal_immig_rate,
     a_ext_rate = ext_rate$animal_ext_rate,
-    a_clado_rate = immig_clado_list$animal_clado_rate,
+    a_clado_rate = clado_rate$animal_clado_rate,
     a_ana_rate = ana_rate$animal_ana_rate,
     cospec_rate = cospec_rate,
     gain_rate = gain_rate,
