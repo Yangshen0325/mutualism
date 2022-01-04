@@ -17,8 +17,8 @@
 # load("rates.Rdata")
 # update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
 #                   M0,Mt,p_status,a_status)
-# possible_event <- possible_event(rates) 
-possible_event <- function(rates){
+# event <- possible_event(rates) 
+event <- function(rates){
   
   output <- melt(setNames(rates,seq_along(rates)))
   
