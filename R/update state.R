@@ -171,7 +171,7 @@ update_state <- function(
       
       #for daughter A
       island_spec_plant[ind, 4] = "C"
-      island_spec_palnt[ind, 1] = maxspecID + 1
+      island_spec_plant[ind, 1] = maxplantID + 1
       island_spec_plant[ind, 5] = "A"
       island_spec_plant[ind, 6] = island_spec_plant[ind, 3]
       island_spec_plant[ind, 7] = NA
@@ -179,7 +179,7 @@ update_state <- function(
       #for daughter B
       island_spec_plant = rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind, 2],
                                                     island_spec_plant[ind,3],"C","B",timeval,NA))
-      maxspecID = maxspecID + 2
+      maxplantID = maxplantID + 2
     }
   } 
   
@@ -330,7 +330,7 @@ update_state <- function(
       island_spec_animal[ind, 7] = NA
       
       #for daughter B
-      island_spec_animal = rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind, 2],
+        island_spec_animal = rbind(island_spec_animal,c(maxanimalID + 2,island_spec_animal[ind, 2],
                                                       island_spec_animal[ind,3],"C","B",timeval,NA))
       maxanimalID = maxanimalID + 2
     }
@@ -364,8 +364,8 @@ update_state <- function(
     ind2 <- which(island_spec_animal[, 1] == cospec_animal)
     
     Mt <- new_Mt_cospec(Mt=Mt,possible_event=possible_event,p=p)
-    p_status[coplant] <- 0
-    a_status[coanimal] <- 0
+    p_status[cospec_plant] <- 0
+    a_status[cospec_animal] <- 0
     p_status <- c(p_status,1,1)
     a_status <- c(a_status,1,1)
     
@@ -388,7 +388,7 @@ update_state <- function(
       
       #for daughter A
       island_spec_plant[ind1, 4] = "C"
-      island_spec_palnt[ind1, 1] = maxspecID + 1
+      island_spec_plant[ind1, 1] = maxplantID + 1
       island_spec_plant[ind1, 5] = "A"
       island_spec_plant[ind1, 6] = island_spec_plant[ind1, 3]
       island_spec_plant[ind1, 7] = NA
@@ -396,7 +396,7 @@ update_state <- function(
       #for daughter B
       island_spec_plant = rbind(island_spec_plant,c(maxplantID + 2,island_spec_plant[ind1, 2],
                                                     island_spec_plant[ind1,3],"C","B",timeval,NA))
-      maxspecID = maxspecID + 2
+      maxplantID = maxplantID + 2
     }
     #for animal species, if the species that speciates is cladogenetic
     
