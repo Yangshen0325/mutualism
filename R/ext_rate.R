@@ -14,7 +14,7 @@
 #
 # mu_par <- c(0.02,0.01,0.02,0.01)
 # 
-# Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# M0<- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
 # a_status<-c(1,0,0,0,1)
 #
@@ -25,12 +25,13 @@ get_ext_rate <- function(mu_par,
                          p_status,
                          a_status) {
   
-  part_compe_list <- get_part_compe(Mt=Mt,
+  part_compe_list <- get_part_compe(M0=M0,
+                                    Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
   
-  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[1]])) * p_status
-  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[2]])) *a_status
+  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[3]])) * p_status
+  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[4]])) *a_status
   
   ext_list <- list(plant_ext_rate = plant_ext_rate,
                    animal_ext_rate = animal_ext_rate)
