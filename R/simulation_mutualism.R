@@ -1,8 +1,28 @@
 # Internal function of the DAISIE simulation
+ library(reshape2)
+ time <-0.3
+ M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+ p <- 1
+ p_status<-c(0,1,1,0)
+ a_status<-c(1,0,0,0,1)
+ gam0_par <- c(0.6,0.6)
+ lac0_par <- c(0.3,0.3)
+ K_par <- c(100,0.6,100,0.6)
+ mu_par <- c(0.02,0.01,0.02,0.01)
+ laa_par <- c(0.1,0.2,0.1,0.2)
+ lambda1 <- 0.1
+ qloss <- 0.1
+ qgain <- 0.1
 
+#  DAISIE_sim_core_mutualism(time=time,
+# M0=M0,
+ # p=p,
+ # p_status,
+ # a_status,gam0_,par,lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain)
 DAISIE_sim_core_mutualism <- function(
   time,
   M0,
+  p,
   p_status,
   a_status,
   gam0_lac0_par,
@@ -41,7 +61,8 @@ DAISIE_sim_core_mutualism <- function(
   while (timeval < totaltime) {
     
     rates <- update_rates_mutual(
-      gam0_lac0_par = gam0_lac0_par,
+      gam0_par = gam0_par,
+      lac0_par = lac0_par,
       K_par = K_par,
       mu_par = mu_par,
       laa_par = laa_par,
@@ -59,10 +80,10 @@ DAISIE_sim_core_mutualism <- function(
     timeval <- timeval_and_dt$timeval
     # next time
     
-    possible_event <- possible_event(rates = rates)
+    possible_event <- event(rates = rates)
     # next event
     
-    update_state <- update_state(timeval = timeval,
+    updated_state <- update_state(timeval = timeval,
                                  totaltime = totaltime,
                                  possible_event = possible_event,
                                  p=p,
@@ -75,14 +96,14 @@ DAISIE_sim_core_mutualism <- function(
                                  island_spec_animal = island_spec_animal,
                                  stt_table = stt_table)
     
-    Mt <- update_state$Mt
-    p_status <- update_state$p_status
-    a_status <- update_state$a_status
-    island_spec_plant <- update_state$island_spec_plant
-    island_spec_animal <- update_state$island_spec_animal
-    maxplantID <- update_state$maxplantID
-    maxanimalID <- update_state$maxanimalID
-    stt_table <- update_state$stt_table
+    Mt <- updated_state$Mt
+    p_status <- updated_state$p_status
+    a_status <- updated_state$a_status
+    island_spec_plant <- updated_state$island_spec_plant
+    island_spec_animal <- updated_state$island_spec_animal
+    maxplantID <- updated_state$maxplantID
+    maxanimalID <- updated_state$maxanimalID
+    stt_table <- updated_state$stt_table
     #num_spec <- length(island_spec[, 1])
   }
   
@@ -101,7 +122,8 @@ DAISIE_sim_core_mutualism <- function(
   )
 }
 
-
+# save(rates, file="rates.Rdata")
+# save(updated_state, file="updated_state.Rdata")
 
 
 
