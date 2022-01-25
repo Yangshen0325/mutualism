@@ -1,15 +1,11 @@
 # Calculate anagenesis rates
-# 
-# laa_par includes: laa_par <- c(p_laa0,p_laa1,a_laa0,a_laa1)
-# p_laa0: the initial anagenesis rate of plant species without mutualistic partners
-# a_laa0: the initial anagenesis rate of animal species without mutualistic partners
-# p_laa1: a coefficient mediate the effects from mutualism
-# a_laa1: a coefficient mediate the effects from mutualism
-# M0: the initial matrix in the mainland
-# Mt: the possible interaction matrix on island at time t
-# p_status: to show whether the plant species present on island
-# a_status: to show whether the animal species present on island
-#
+# mutualism_pars <- list(lac_par,mu_par,K_par,gam_par,laa_par,M0,qgain,qloss,lambda1)  
+# laa_par <- c(laa_P0, laa_A0, laa_P1, laa_A1)
+# laa_P0: the initial anagenesis rate of plant species without mutualistic partners
+# laa_A0: the initial anagenesis rate of animal species without mutualistic partners
+# laa_P1: a coefficient mediate the effects from mutualism
+# laa_A1: a coefficient mediate the effects from mutualism
+
 # example:
 # island_spec_plant <- matrix(ncol = 7)
 # island_spec_plant[1,] <- c(2,2,0,"I",NA,NA,NA)
