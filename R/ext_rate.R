@@ -19,6 +19,11 @@ get_ext_rate <- function(Mt,
                          a_status,
                          mutualism_pars) {
   
+  if(is.null(Mt)){
+    num_spec <- sum(p_status)+sum(a_status)
+    ext_rate <- max(0, mu * num_spec, na.rm = TRUE)
+    return(ext_rate)
+  } else {
   part_compe_list <- get_part_compe(Mt=Mt,
                                     p_status= p_status,
                                     a_status= a_status)
@@ -30,5 +35,6 @@ get_ext_rate <- function(Mt,
   ext_list <- list(plant_ext_rate = plant_ext_rate,
                    animal_ext_rate = animal_ext_rate)
   return(ext_list)
+  }
 }
 # plant_ext_rate is a list, so is animal_ext_rate
