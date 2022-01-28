@@ -1,37 +1,26 @@
 
 # Calculate cospeciation rate
-#
-
+# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
 # lambda1: a coefficient that mediate the effects from mutualism
-# K_par includes: K_par <- c(KP0,KP1,KA0,KA1)
-# KP0: the initial carrying capacity of plant species without any mutualists
-# KA0: the initial carrying capacity of animal species without any mutualists
-# KP1: a coefficient showing the influence from mutualism to plant species
-# KA1: a coefficient showing the influence from mutualism to animal species
 # Mt: the possible interaction matrix on island at time t
 # p_status: to show whether the plant species present on island, p_status at time 0 is like rep(0,NROW(M0))
 # a_status: to show whether the animal species present on island,a_status at time 0 is like rep(0,NCOL(M0))
 #
-# example:
-#
-# lambda1 <- 0.1
-# K_par <- c(20,0.6,20,0.6)
-# Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(1,0,0,1)
-# a_status<-c(1,0,0,0,1)
 #
 # cospec_rate <- get_cospec_rate(lambda1,K_par,Mt,p_status,a_status)
 
-get_cospec_rate <- function(lambda1,
-                            K_par,
+get_cospec_rate <- function(K,
                             M0,
                             Mt,
                             p_status,
-                            a_status){
+                            a_status,
+                            mutualism_pars){
   
-  NK_list <- get_NK(Mt = Mt,
+  NK_list <- get_NK(K = K,
+                    Mt = Mt,
                     p_status = p_status,
-                    a_status = a_status)
+                    a_status = a_status,
+                    mutualism_pars = mutualism_pars)
   
   expand_matrix_list <- get_expand_matrix(Mt = Mt,
                                           p_status = p_status,

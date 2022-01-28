@@ -1,13 +1,9 @@
 # Calculate the gain rate.
 
-# mutualism_pars <- list(lac_par,mu_par,K_par,gam_par,laa_par,M0,qgain,qloss,lambda1) 
+# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
 # qgain: a probability that a pair of plant and animal species could get a link 
 #
-# example
-#
-# Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,0,1)
+
 # qgain <- 0.1
 # gain_rate <- get_gain_rate(Mt,p_status,a_status,mutualism_pars)
 

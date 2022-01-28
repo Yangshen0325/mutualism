@@ -1,5 +1,5 @@
 # get mutualistic partners and competitors for animal and plant species
-# mutualism_pars <- list(lac_par,mu_par,K_par,gam0_par,laa_par,M0,qgain,qloss,lambda1)
+# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
 # example:
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # p_status<-c(0,1,1,0)
@@ -22,7 +22,7 @@ get_part_compe <- function(Mt,
   }  # the number of competitors of each plant species
   
   
-  for (x in seq(ncol(Mt))){
+  for (x in seq(ncol(Mt))){ 
     animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
   } # the number of competitors of each animal species
   
@@ -34,18 +34,20 @@ get_part_compe <- function(Mt,
   return(part_compe_list)
 }
 # N/K
-# mutualism_pars <- list(lac_par,mu_par,K_par,gam_par,laa_par,M0,qgain,qloss,lambda1)
-# K_par <- c(K_P0, K_A0, K_P1, K_A1)
-# K_P0: the initial carrying capacity of plant species without any mutualists
+# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
+# K_par <- c(K_A0, K_P1, K_A1)
 # K_A0: the initial carrying capacity of animal species without any mutualists
 # K_P1: a coefficient showing the influence from mutualism to plant species
 # K_A1: a coefficient showing the influence from mutualism to animal species
 # example:
-# K_par <- c(100,100,0.6,0.6)
-# NK_list <- get_NK(Mt, p_status,a_status)
-get_NK <- function(Mt,
+# K <- Inf;
+# K_par <- c(Inf,0.6,0.6)
+# NK_list <- get_NK(K,Mt, p_status,a_status,mutualism_pars)
+get_NK <- function(K,
+                   Mt,
                    p_status,
-                   a_status){
+                   a_status,
+                   mutualism_pars){
   part_compe_list <- get_part_compe(Mt = Mt,
                                     p_status = p_status,
                                     a_status = a_status)
@@ -53,13 +55,15 @@ get_NK <- function(Mt,
   indp <- which(part_compe_list[[1]]==0)
   inda <- which(part_compe_list[[2]]==0)
   
-      plant_NK <- exp(-(sum(p_status)/K_par[1])+
-                           part_compe_list[[3]]/(K_par[3]*part_compe_list[[1]]))
-      plant_NK[indp] <- exp(-(sum(p_status)/K_par[1])) # N/K for plant species
+  K_par <- mutualism_pars$K_par
+  
+      plant_NK <- exp(-(sum(p_status)/K)+
+                           part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
+      plant_NK[indp] <- exp(-(sum(p_status)/K)) # N/K for plant species
  
-      animal_NK <- exp(-(sum(a_status)/K_par[2])+
-                            part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]])) 
-      animal_NK[inda] <- exp(-(sum(a_status)/K_par[2]))
+      animal_NK <- exp(-(sum(a_status)/K_par[1])+
+                            part_compe_list[[4]]/(K_par[3]*part_compe_list[[2]])) 
+      animal_NK[inda] <- exp(-(sum(a_status)/K_par[1]))
   
   NK_list <- list(plant_NK = plant_NK,
                   animal_NK = animal_NK)
