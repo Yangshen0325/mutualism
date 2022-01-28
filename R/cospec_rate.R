@@ -10,7 +10,6 @@
 # cospec_rate <- get_cospec_rate(lambda1,K_par,Mt,p_status,a_status)
 
 get_cospec_rate <- function(K,
-                            M0,
                             Mt,
                             p_status,
                             a_status,

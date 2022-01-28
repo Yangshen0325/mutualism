@@ -20,7 +20,7 @@ get_ext_rate <- function(mu,
                          a_status,
                          mutualism_pars) {
   
-  if (is.null(mutualism_pars) || is.null(Mt)){
+  if (is.null(mutualism_pars)){
     num_spec <- sum(p_status)+sum(a_status)
     ext_rate <- max(0, mu * num_spec, na.rm = TRUE)
     return(ext_rate)

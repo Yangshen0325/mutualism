@@ -23,9 +23,9 @@ get_immig_rate <- function(gam,
                            a_status,
                            mutualism_pars){
   
-  if (is.null(mutualism_pars) || is.null(Mt)){
-    mainland_n <- sum(NROW(M0)+NCOL(M0))
-    num_spec <- sum(p_status)+sum(a_status)
+  if (is.null(mutualism_pars)){
+    mainland_n <- sum(NROW(M0)+NCOL(M0)) # the number of species on the mainland
+    num_spec <- sum(p_status)+sum(a_status) # the number of species on the island
     immig_rate <- max(c( mainland_n * gam * (1 - (num_spec / K)),
                          0), na.rm = TRUE)
     return(immig_rate)
@@ -38,7 +38,8 @@ get_immig_rate <- function(gam,
     
     gam_animal <- mutualism_pars$gam_animal
     
-    plant_immig_rate <- gam * NK_list[[1]][1:NROW(M0)] 
+    plant_immig_rate <- gam * NK_list[[1]][1:NROW(M0)] #NK_list calculates for all species, but only 
+    #those ID from mainland can immigrate. row                                                             #rows for plant while cols for animal. 
     animal_immig_rate <- gam_animal * NK_list[[2]][1:NCOL(M0)] 
     
     immig_list <- list(plant_immig_rate = plant_immig_rate,

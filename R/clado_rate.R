@@ -17,13 +17,12 @@
 
 get_clado_rate <- function(lac,
                            K,
-                           M0,
                            Mt,
                            p_status,
                            a_status,
                            mutualism_pars){
   
-  if (is.null(mutualism_pars) || is.null(Mt)){
+  if (is.null(mutualism_pars)){
     num_spec <- sum(p_status)+sum(a_status)
     clado_rate <- max(
       0, lac * num_spec  * (1 - num_spec /K), na.rm = TRUE)
@@ -38,7 +37,7 @@ get_clado_rate <- function(lac,
     
     lac_animal <- mutualism_pars$lac_animal
     
-    plant_clado_rate <- lac * NK_list[[1]] * p_status 
+    plant_clado_rate <- lac * NK_list[[1]] * p_status # "* p_status" assures the                                                           # species is on the island 
     animal_clado_rate <- lac_animal * NK_list[[2]] *a_status
     #only species presented on island have cladogenestic rates
     

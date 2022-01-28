@@ -17,12 +17,12 @@ get_part_compe <- function(Mt,
   plant_compe <- matrix()
   animal_compe <- matrix()
   
-  for (x in seq(nrow(Mt))){
+  for (x in seq(NROW(Mt))){
     plant_compe[x] <- sum((colSums(tMt[,x]*tMt[,-x]* a_status)>=1) * as.matrix(p_status)[-x,])
   }  # the number of competitors of each plant species
   
   
-  for (x in seq(ncol(Mt))){ 
+  for (x in seq(NCOL(Mt))){ 
     animal_compe[x] <- sum((colSums(Mt[,x] * Mt[,-x]* p_status)>=1) * as.matrix(a_status)[-x,])
   } # the number of competitors of each animal species
   
@@ -57,13 +57,15 @@ get_NK <- function(K,
   
   K_par <- mutualism_pars$K_par
   
-      plant_NK <- exp(-(sum(p_status)/K)+
-                           part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]]))
-      plant_NK[indp] <- exp(-(sum(p_status)/K)) # N/K for plant species
- 
-      animal_NK <- exp(-(sum(a_status)/K_par[1])+
-                            part_compe_list[[4]]/(K_par[3]*part_compe_list[[2]])) 
-      animal_NK[inda] <- exp(-(sum(a_status)/K_par[1]))
+  plant_NK <- exp(-(sum(p_status)/K+
+                      part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]])))
+  plant_NK[indp] <- exp(-(sum(p_status)/K)) # N/K for plant species. According to the equation,
+  # If there's no mutualistic partners on the island, N/K should be 
+  # exp(-N/K), otherwise it's exp(-(N/K+N'/(K'*partners))).
+  
+  animal_NK <- exp(-(sum(a_status)/K_par[1]+
+                       part_compe_list[[4]]/(K_par[3]*part_compe_list[[2]]))) 
+  animal_NK[inda] <- exp(-(sum(a_status)/K_par[1]))# N/K for animal species
   
   NK_list <- list(plant_NK = plant_NK,
                   animal_NK = animal_NK)

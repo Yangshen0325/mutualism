@@ -30,34 +30,22 @@ get_ana_rate <- function(laa,
                          Mt,
                          p_status,
                          a_status,
-                         mutualism_pars,
-                         island_spec_plant,
-                         island_spec_animal) {
+                         mutualism_pars) {
   
-  if(is.null(mutualism_pars) || is.null(Mt)){
+  if(is.null(mutualism_pars)){
     ana_rate <- laa * num_immigrants
     return(ana_rate)
   }else{
     
-    possible_ana_p <- matrix(0,nrow=NROW(M0))
-    possible_ana_a <- matrix(0,nrow=NCOL(M0))
-    
-    plant_ind <-as.numeric(island_spec_plant[which(island_spec_plant[,4]=="I"),1])
-    animal_ind <-as.numeric(island_spec_animal[which(island_spec_animal[,4]=="I"),1])
-    possible_ana_p[plant_ind] = 1
-    possible_ana_a[animal_ind] = 1
-    
     laa_par <- mutualism_pars$laa_par
     
-    plant_ana_rate =  (laa + laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
-      p_status[1:NROW(M0)] * possible_ana_p #here ? maybe no need to * possible_ana_p,because p_status[1:NROW(M0)]
-    #has indicated the species is from mainland.
-    animal_ana_rate =  (laa_par[1] + 
-                          laa_par[3] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * 
-      a_status[1:NCOL(M0)] * possible_ana_a
+    plant_ana_rate = laa + laa_par[2] * (abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) 
+    # "[1:NROW(M0),1:NCOL(M0)]" keeps only species ID from mainland can happend to anagenesis.                                                                                     
+    animal_ana_rate =  laa_par[1] + laa_par[3] * (t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*%p_status[1:NROW(M0)]) 
     
     ana_list <- list(plant_ana_rate = plant_ana_rate,
                      animal_ana_rate = animal_ana_rate)
     return(ana_list)
   }
 }
+

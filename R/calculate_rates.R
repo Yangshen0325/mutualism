@@ -1,97 +1,120 @@
 
 #immigration rate
-get_immig_rate <- function(gam0_par,
-                           K_par,
-                           Mt,
+get_immig_rate <- function(gam,
+                           K,
                            M0,
+                           Mt,
                            p_status,
-                           a_status){
+                           a_status,
+                           mutualism_pars){
   
-  NK_list <- get_NK(K_par=K_par,
-                    M0=M0,
-                    Mt=Mt,
-                    p_status= p_status,
-                    a_status= a_status)
-  
-  plant_immig_rate <- gam0_par[1] * NK_list[[1]] 
-  animal_immig_rate <- gam0_par[2] * NK_list[[2]]
-  
-  
-  immig_list <- list(plant_immig_rate = plant_immig_rate,
-                     animal_immig_rate = animal_immig_rate)
-  
-  return(immig_list)
+  if (is.null(mutualism_pars)){
+    mainland_n <- sum(NROW(M0)+NCOL(M0)) # the number of species on the mainland
+    num_spec <- sum(p_status)+sum(a_status) # the number of species on the island
+    immig_rate <- max(c( mainland_n * gam * (1 - (num_spec / K)),
+                         0), na.rm = TRUE)
+    return(immig_rate)
+  } else {
+    NK_list <- get_NK(K = K,
+                      Mt = Mt,
+                      p_status = p_status,
+                      a_status = a_status,
+                      mutualism_pars = mutualism_pars)
+    
+    gam_animal <- mutualism_pars$gam_animal
+    
+    plant_immig_rate <- gam * NK_list[[1]][1:NROW(M0)] #NK_list calculates for all                                                             #species, but only those ID from                                                         #mainland can immigrate.                                                            #rows for plant while cols for animal. 
+    animal_immig_rate <- gam_animal * NK_list[[2]][1:NCOL(M0)] 
+    
+    immig_list <- list(plant_immig_rate = plant_immig_rate,
+                       animal_immig_rate = animal_immig_rate)
+    
+    return(immig_list)
+  }
 }
 
 #extinction rate
-get_ext_rate <- function(mu_par,
+get_ext_rate <- function(mu,
                          Mt,
                          p_status,
-                         a_status) {
+                         a_status,
+                         mutualism_pars) {
   
-  part_compe_list <- get_part_compe(M0=M0,
-                                    Mt=Mt,
-                                    p_status= p_status,
-                                    a_status= a_status)
-  
-  plant_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[2] * part_compe_list[[3]])) * p_status
-  animal_ext_rate <- as.matrix(pmax(0, mu_par[3] - mu_par[4] * part_compe_list[[4]])) *a_status
-  
-  ext_list <- list(plant_ext_rate = plant_ext_rate,
-                   animal_ext_rate = animal_ext_rate)
-  return(ext_list)
+  if (is.null(mutualism_pars)){
+    num_spec <- sum(p_status)+sum(a_status)
+    ext_rate <- max(0, mu * num_spec, na.rm = TRUE)
+    return(ext_rate)
+  } else {
+    part_compe_list <- get_part_compe(Mt=Mt,
+                                      p_status= p_status,
+                                      a_status= a_status)
+    mu_par <- mutualism_pars$mu_par
+    
+    plant_ext_rate <- as.matrix(pmax(0, mu - mu_par[2] * part_compe_list[[1]])) * p_status
+    animal_ext_rate <- as.matrix(pmax(0, mu_par[1] - mu_par[3] * part_compe_list[[2]])) *a_status
+    
+    ext_list <- list(plant_ext_rate = plant_ext_rate,
+                     animal_ext_rate = animal_ext_rate)
+    return(ext_list)
+  }
 }
 #anagenetic rate
-get_ana_rate <- function(laa_par,
+get_ana_rate <- function(laa,
+                         num_immigrant,
                          M0,
                          Mt,
                          p_status,
                          a_status,
-                         island_spec_plant,
-                         island_spec_animal) { 
+                         mutualism_pars) {
   
-  possible_ana_p <- matrix(0,nrow=NROW(M0))
-  possible_ana_a <- matrix(0,nrow=NCOL(M0))
-  
-  plant_ind <-as.numeric(island_spec_plant[which(island_spec_plant[,4]=="I"),1])
-  animal_ind <-as.numeric(island_spec_animal[which(island_spec_animal[,4]=="I"),1])
-  possible_ana_p[plant_ind] = 1
-  possible_ana_a[animal_ind] = 1
-  
-  plant_ana_rate =  (laa_par[1] + 
-                       laa_par[2] *  abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
-    p_status[1:NROW(M0)] * possible_ana_p
-  animal_ana_rate =  (laa_par[3] + 
-                        laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) * 
-    a_status[1:NCOL(M0)] * possible_ana_a
-  
-  ana_list <- list(plant_ana_rate = plant_ana_rate,
-                   animal_ana_rate = animal_ana_rate)
-  return(ana_list)
+  if(is.null(mutualism_pars)){
+    ana_rate <- laa * num_immigrants
+    return(ana_rate)
+  }else{
+    
+    laa_par <- mutualism_pars$laa_par
+    
+    plant_ana_rate = laa + laa_par[2] * (abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)])  #"[1:NROW(M0),1:NCOL(M0)]" keeps only species ID from mainland                          #can happend to anagenesis.                                                                                     
+    animal_ana_rate = laa_par[1] + laa_par[3] * (t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*%                                                               p_status[1:NROW(M0)]) 
+    
+    ana_list <- list(plant_ana_rate = plant_ana_rate,
+                     animal_ana_rate = animal_ana_rate)
+    return(ana_list)
+  }
 }
 
 #cladogenetic  rate
-get_clado_rate <- function(lac0_par,
-                           K_par,
+get_clado_rate <- function(lac,
+                           K,
                            Mt,
-                           M0,
                            p_status,
-                           a_status){
+                           a_status,
+                           mutualism_pars){
   
-  NK_list <- get_NK(K_par=K_par,
-                    M0=M0,
-                    Mt=Mt,
-                    p_status= p_status,
-                    a_status= a_status)
-  
-  plant_clado_rate <- lac0_par[1] * NK_list[[3]] * p_status
-  animal_clado_rate <- lac0_par[2] * NK_list[[4]] *a_status
-  
-  
-  clado_list <- list(plant_clado_rate = plant_clado_rate,
-                     animal_clado_rate = animal_clado_rate)
-  
-  return(clado_list)
+  if (is.null(mutualism_pars)){
+    num_spec <- sum(p_status)+sum(a_status)
+    clado_rate <- max(
+      0, lac * num_spec  * (1 - num_spec /K), na.rm = TRUE)
+    return(clado_rate)
+  }else{
+    
+    NK_list <- get_NK(K = K,
+                      Mt = Mt,
+                      p_status = p_status,
+                      a_status = a_status,
+                      mutualism_pars = mutualism_pars)
+    
+    lac_animal <- mutualism_pars$lac_animal
+    
+    plant_clado_rate <- lac * NK_list[[1]] * p_status #"* p_status" assures the                                                           #species is on the island 
+    animal_clado_rate <- lac_animal * NK_list[[2]] *a_status
+    #only species presented on island have cladogenestic rates
+    
+    clado_list <- list(plant_clado_rate = plant_clado_rate,
+                       animal_clado_rate = animal_clado_rate)
+    
+    return(clado_list)
+  }
 }
 
 
