@@ -1,15 +1,9 @@
 # get mutualistic partners and competitors for animal and plant species
-# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
-# example:
-# Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,0,1)
-# part_compe_list <-get_part_compe(Mt, p_status,a_status)
 
 get_part_compe <- function(Mt,
                            p_status,
                            a_status){
-  
+  tMt <- t(Mt)
   
   plant_partners <- Mt %*% a_status #the number of partners that each plant species has
   animal_partners <- tMt %*% p_status #the number of partners that each animal species has
@@ -34,17 +28,7 @@ get_part_compe <- function(Mt,
   return(part_compe_list)
 }
 # N/K
-# mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
-# K_par <- c(K_A0, K_P1, K_A1)
-# K_A0: the initial carrying capacity of animal species without any mutualists
-# K_P1: a coefficient showing the influence from mutualism to plant species
-# K_A1: a coefficient showing the influence from mutualism to animal species
-# example:
-# K <- Inf;
-# K_par <- c(Inf,0.6,0.6)
-# NK_list <- get_NK(K,Mt, p_status,a_status,mutualism_pars)
-get_NK <- function(K,
-                   Mt,
+get_NK <- function(Mt,
                    p_status,
                    a_status,
                    mutualism_pars){
@@ -57,23 +41,23 @@ get_NK <- function(K,
   
   K_par <- mutualism_pars$K_par
   
-  plant_NK <- exp(-(sum(p_status)/K+
-                      part_compe_list[[3]]/(K_par[2]*part_compe_list[[1]])))
-  plant_NK[indp] <- exp(-(sum(p_status)/K)) # N/K for plant species. According to the equation,
+  plant_NK <- exp(-(sum(p_status)/K_par[1]+
+                      part_compe_list[[3]]/(K_par[3]*part_compe_list[[1]])))
+  plant_NK[indp] <- exp(-(sum(p_status)/K_par[1])) # N/K for plant species. According to the equation,
   # If there's no mutualistic partners on the island, N/K should be 
   # exp(-N/K), otherwise it's exp(-(N/K+N'/(K'*partners))).
   
-  animal_NK <- exp(-(sum(a_status)/K_par[1]+
-                       part_compe_list[[4]]/(K_par[3]*part_compe_list[[2]]))) 
-  animal_NK[inda] <- exp(-(sum(a_status)/K_par[1]))# N/K for animal species
+  animal_NK <- exp(-(sum(a_status)/K_par[2]+
+                       part_compe_list[[4]]/(K_par[4]*part_compe_list[[2]]))) 
+  animal_NK[inda] <- exp(-(sum(a_status)/K_par[2]))# N/K for animal species
   
   NK_list <- list(plant_NK = plant_NK,
                   animal_NK = animal_NK)
   
   return(NK_list)
 }
+
 # get p_status and a_status expanded
-# get_expand_matrix <- (Mt, p_status, a_status)
 get_expand_matrix <- function(Mt,
                               p_status,
                               a_status){

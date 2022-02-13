@@ -12,13 +12,8 @@
 # [10]: gain links event between pairs
 # [11]: loss links event between pairs
 
-#example:
-# library(reshape2)
-# load("rates.Rdata")
-# update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                   M0,Mt,p_status,a_status)
-# event <- possible_event(rates) 
-event <- function(rates){
+library(reshape2)
+DAISIE_sample_event_mutualism <- function(rates){
   
   output <- melt(setNames(rates,seq_along(rates)))
   
@@ -27,20 +22,12 @@ event <- function(rates){
          replace = FALSE,
          prob=unlist(rates))
   
-  event <- output[x,]
+  possible_event <- output[x,]
 
-  return(event)
+  return(possible_event)
 }
 
 # Calculates when the next timestep will be.
-
-# rates <- update_rates_mutual(gam0_par,mu_par,laa_par,lac0_par,lambda1,K_par,w,
-#                   M0,Mt,p_status,a_status,qloss,qgain,num_immigrants)
-# timeval <- 0
-# calc_next_timeval(rates,timeval)
-
-# update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-#                   M0,Mt,p_status,a_status)
 
 calc_next_timeval <- function(rates, timeval) {
   

@@ -1,61 +1,29 @@
-# Internal function of the DAISIE simulation
- library(reshape2)
- time <-0.3
- M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
- p <- 1
- p_status<-c(0,1,1,0)
- a_status<-c(1,0,0,0,1)
- gam0_par <- c(0.6,0.6)
- lac0_par <- c(0.3,0.3)
- K_par <- c(100,0.6,100,0.6)
- mu_par <- c(0.02,0.01,0.02,0.01)
- laa_par <- c(0.1,0.2,0.1,0.2)
- lambda1 <- 0.1
- qloss <- 0.1
- qgain <- 0.1
 
-#  DAISIE_sim_core_mutualism(time=time,
-# M0=M0,
- # p=p,
- # p_status,
- # a_status,gam0_,par,lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain)
 DAISIE_sim_core_mutualism <- function(
-  time,
-  M0,
-  p,
-  p_status,
-  a_status,
-  gam0_lac0_par,
-  K_par,
-  mu_par,
-  laa_par,
-  lambda1,
-  qloss,
-  qgain){
+  time=1,
+  mainland_n=1,
+  pars=c(0.5,0.2,Inf,0.05,1),
+  M=100,
+  mutualism_pars = NULL
+){
+  
+  
+  # mutualism_pars <- list(lac_animal,mu_par,K_par,gam_animal,laa_par,qgain,qloss,lambda1)
   
   #### Initialization ####
-  timeval <- 0 
+  timeval <- 0
   totaltime <- time
+  M0 <- mutualism_pars$M0
+  maxspecID <- 1
+  
   Mt <- M0
-  maxplantID <- NROW(M0)
-  maxanimalID <- NCOL(M0)
   
-  island_spec_plant <- matrix(ncol = 7)
-  island_spec_plant[1,] <- c(2,2,0,"I",NA,NA,NA)
-  island_spec_plant <- rbind(island_spec_plant, c(3,3,0,"A",NA,NA,NA))
-  
-  island_spec_animal <- matrix(ncol = 7)
-  island_spec_animal[1,] <- c(1,1,0,"I",NA,NA,NA)
-  island_spec_animal <- rbind(island_spec_animal,c(5,5,0,"A",NA,NA,NA))
-  
+  island_spec <- c()
   stt_table <- matrix(ncol = 7)
-  colnames(stt_table) <- c("Time","nIp","nAp","nCp","nIa","nAa","nCa")
-  stt_table[1,] <- c(totaltime,1,1,0,1,1,0)
+  colnames(stt_table) <- c("Time", "nI", "nA", "nC", "nIa","nAa","nCa")
   
-  # rates <-update_rates_mutual(gam0_lac0_par,K_par,mu_par,laa_par,lambda1,qloss,qgain,
-  #                M0,Mt,p_status,a_status,island_spec_plant,island_spec_animal)
-  #load("rates.Rdata")
-  
+  stt_table[1, ] <- c(totaltime, 0, 0, 0, 0, 0, 0)
+
   
   #### Start Monte Carlo iterations ####
   while (timeval < totaltime) {
