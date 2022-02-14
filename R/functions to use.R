@@ -9,7 +9,7 @@
 get_part_compe <- function(Mt,
                            p_status,
                            a_status){
-  tMt <- t(Mt)
+  
   
   plant_partners <- Mt %*% a_status #the number of partners that each plant species has
   animal_partners <- tMt %*% p_status #the number of partners that each animal species has
