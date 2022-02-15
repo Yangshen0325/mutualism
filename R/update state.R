@@ -12,31 +12,11 @@
 # [10]: gain links event between pairs
 # [11]: loss links event between pairs
 
-# M0= {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-# p_status<-c(0,1,1,0)
-# a_status<-c(1,0,0,0,1)
-# possible_event <- possible_event(rates)  #could be like   Var1 Var2 value L1
-###########################################################  1    1   0.7  8
-
-######################################################
-# island_spec_plant <- matrix(ncol = 7)
-# island_spec_plant[1,] <- c(2,2,0,"I",NA,NA,NA)
-# island_spec_plant <- rbind(island_spec_plant, c(3,3,0,"A",NA,NA,NA))
-# 
-# island_spec_animal <- matrix(ncol = 7)
-# island_spec_animal[1,] <- c(1,1,0,"I",NA,NA,NA)
-# island_spec_animal <- rbind(island_spec_animal,c(5,5,0,"A",NA,NA,NA))
-
-# stt_table <- matrix(ncol = 7)
-# colnames(stt_table) <- c("Time","nIp","nAp","nCp","nIa","nAa","nCa")
-# stt_table[1,] <- c(totaltime,1,1,0,1,1,0)
-
 #Update state of island given sampled event
-update_state <- function(
+DAISIE_sim_update_state_mutualism <- function(
   timeval,
   totaltime,
   possible_event,
-  p,
   Mt,
   p_status,
   a_status,
@@ -44,7 +24,8 @@ update_state <- function(
   maxanimalID,
   island_spec_plant,
   island_spec_animal,
-  stt_table){
+  stt_table,
+  mutualism_pars){
   
   ##########################################
   # [1]: immigration event with plant species 

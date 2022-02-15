@@ -29,7 +29,7 @@ DAISIE_sample_event_mutualism <- function(rates){
 
 # Calculates when the next timestep will be.
 
-calc_next_timeval <- function(rates, timeval) {
+calc_next_timeval_mutualism <- function(rates, timeval) {
   
   output <- melt(setNames(rates,seq_along(rates)))
   

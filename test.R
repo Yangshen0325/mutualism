@@ -16,7 +16,7 @@
 
 # get_expand_matrix <- (Mt, p_status, a_status)
 
-#' mutualism_pars <- list(lac_par=lac_par,mu_par=mu_par,K_par=K_par,gam_par=gam_par,laa_par=laa_par,qgain=qgain,qloss=qloss,lambda1=lambda1,M0=M0)
+#' mutualism_pars <- list(lac_par=lac_par,mu_par=mu_par,K_par=K_par,gam_par=gam_par,laa_par=laa_par,qgain=qgain,qloss=qloss,lambda1=lambda1,M0=M0,pro=pro)
 # lac_par <- c(0.5, 0)           
 # mu_par <- c(0.02, 0, 0, 0)          
 # K_par <- c(Inf, Inf, Inf, Inf)           
@@ -27,6 +27,7 @@
 # lambda1 <- 0
 # M0 <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
 # Mt <- {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# pro=1
 # p_status<-c(0,1,1,0)
 # a_status<-c(1,0,0,0,1)
 # update_rates_mutualism(Mt=Mt,p_status=p_status,a_status=a_status,mutualism_pars=mutualism_pars)
@@ -49,7 +50,24 @@
 
 
 
+# M0= {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
+# p_status<-c(0,1,1,0)
+# a_status<-c(1,0,0,0,1)
+# possible_event <- possible_event(rates)  #could be like   Var1 Var2 value L1
+###########################################################  1    1   0.7  8
 
+######################################################
+# island_spec_plant <- matrix(ncol = 7)
+# island_spec_plant[1,] <- c(2,2,0,"I",NA,NA,NA)
+# island_spec_plant <- rbind(island_spec_plant, c(3,3,0,"A",NA,NA,NA))
+# 
+# island_spec_animal <- matrix(ncol = 7)
+# island_spec_animal[1,] <- c(1,1,0,"I",NA,NA,NA)
+# island_spec_animal <- rbind(island_spec_animal,c(5,5,0,"A",NA,NA,NA))
+
+# stt_table <- matrix(ncol = 7)
+# colnames(stt_table) <- c("Time","nIp","nAp","nCp","nIa","nAa","nCa")
+# stt_table[1,] <- c(totaltime,1,1,0,1,1,0)
 
 
 
