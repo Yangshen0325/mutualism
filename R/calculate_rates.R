@@ -3,8 +3,7 @@ update_rates_mutualism <- function(Mt,
                                    p_status,
                                    a_status,
                                    mutualism_pars,
-                                   island_spec_plant=NULL,
-                                   island_spec_animal=NULL){
+                                   island_spec){
   
   immig_rate <- get_immig_rate(
     Mt = Mt,
@@ -24,8 +23,7 @@ update_rates_mutualism <- function(Mt,
     p_status = p_status,
     a_status = a_status,
     mutualism_pars = mutualism_pars,
-    island_spec_plant = island_spec_plant,
-    island_spec_animal = island_spec_animal
+    island_spec = island_spec
   )
   
   clado_rate <- get_clado_rate(
@@ -76,10 +74,13 @@ get_immig_rate <- function(Mt,
                     a_status = a_status,
                     mutualism_pars = mutualism_pars)
   
+  M0 <- mutualism_pars$M0
   gam_par <- mutualism_pars$gam_par
   
   plant_immig_rate <- gam_par[1] * NK_list[[1]]
+  plant_immig_rate <- as.matrix(plant_immig_rate[1:NROW(M0)])
   animal_immig_rate <- gam_par[2] * NK_list[[2]]
+  animal_immig_rate <- as.matrix(animal_immig_rate[1:NCOL(M0)])
   
   immig_list <- list(plant_immig_rate = plant_immig_rate,
                      animal_immig_rate = animal_immig_rate)
@@ -109,8 +110,7 @@ get_ana_rate <- function(Mt,
                          p_status,
                          a_status,
                          mutualism_pars,
-                         island_spec_plant,
-                         island_spec_animal) {
+                         island_spec) {
   
   laa_par <- mutualism_pars$laa_par
   M0 <- mutualism_pars$M0
@@ -118,8 +118,10 @@ get_ana_rate <- function(Mt,
   possible_ana_p <- matrix(0,nrow=NROW(M0))
   possible_ana_a <- matrix(0,nrow=NCOL(M0))
   
-  plant_ind <-as.numeric(island_spec_plant[which(island_spec_plant[,4]=="I"),1])
-  animal_ind <-as.numeric(island_spec_animal[which(island_spec_animal[,4]=="I"),1])
+  plant_ind <-as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
+                                              which(island_spec[,8] == "plant")),1])
+  animal_ind <-as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
+                                    which(island_spec[,8] == "animal")),1])
   possible_ana_p[plant_ind] = 1
   possible_ana_a[animal_ind] = 1
   

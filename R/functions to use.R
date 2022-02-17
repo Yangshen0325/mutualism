@@ -70,8 +70,9 @@ get_expand_matrix <- function(Mt,
 }
 
 # new Mt if cladogenesis happends with plant species
-new_Mt_clado_p <- function(Mt, possible_event, p){
+new_Mt_clado_p <- function(Mt, possible_event, mutualism_pars){
   
+  pro<- mutualism_pars$pro
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newrows <- list()
   h <- possible_event$Var1
@@ -79,7 +80,7 @@ new_Mt_clado_p <- function(Mt, possible_event, p){
   newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[h,]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
+                                         prob=c(pro,(1-pro)/2,(1-pro)/2))
   newrows<-matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
   
   Mt <- rbind(Mt,newrows)
@@ -87,21 +88,24 @@ new_Mt_clado_p <- function(Mt, possible_event, p){
 }
 
 # new Mt if anagenesis happends with plant species
-new_Mt_ana_p <- function(Mt, possible_event, p){
+new_Mt_ana_p <- function(Mt, possible_event,mutualism_pars){
   
-  newrows <- c()
+  pro <- mutualism_pars$pro
+  newrows <- list()
   h <- possible_event$Var1
   newrows[c(which(Mt[h,]==0))] <- 0
   newrows[c(which(Mt[h,]==1))] <- sample(c(1,0), 
                                          size=length(which(Mt[h,]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)))
+                                         prob=c(pro,(1-pro)))
+  newrows<-matrix(unlist(newrows),nrow=1,ncol=NCOL(Mt))
   Mt <- rbind(Mt,newrows)
   return(Mt)
 }
 # if cladogenesis happends with animal species
-new_Mt_clado_a <- function(Mt, possible_event, p){
+new_Mt_clado_a <- function(Mt, possible_event, mutualism_pars){
   
+  pro <- mutualism_pars$pro
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newcols <- list()
   h <- possible_event$Var1
@@ -109,7 +113,7 @@ new_Mt_clado_a <- function(Mt, possible_event, p){
   newcols[c(which(Mt[,h]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[,h]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
+                                         prob=c(pro,(1-pro)/2,(1-pro)/2))
   
   newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
   Mt <- cbind(Mt,newcols)
@@ -118,24 +122,26 @@ new_Mt_clado_a <- function(Mt, possible_event, p){
 
 # if anagenesis happends with animal species
 # Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-new_Mt_ana_a <- function(Mt, possible_event, p){  
+new_Mt_ana_a <- function(Mt, possible_event, mutualism_pars){  
   
-  newcols <- c()
+  pro <- mutualism_pars$pro
+  newcols <- list()
   h <- possible_event$Var1
   newcols[c(which(Mt[,h]==0))] <- 0
   newcols[c(which(Mt[,h]==1))] <- sample(c(1,0), 
                                          size=length(which(Mt[,h]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)))
-  
+                                         prob=c(pro,(1-pro)))
+  newcols<-t(matrix(unlist(newcols),nrow=1,ncol=NROW(Mt)))
   Mt <- cbind(Mt,newcols)
   return(Mt)
 }
 
 # if cospeciation happends with plant species i and animal species j
 # Mt = {set.seed(1);matrix(sample(c(0,1),20,replace = TRUE),ncol=5,nrow=4)}
-new_Mt_cospec <- function(Mt, possible_event, p){
+new_Mt_cospec <- function(Mt, possible_event, mutualism_pars){
   
+  pro <- mutualism_pars$pro
   possible_output <- list(c(1,1), c(1,0), c(0,1))
   newrows <- list()
   newcols <- list()
@@ -146,7 +152,7 @@ new_Mt_cospec <- function(Mt, possible_event, p){
   newcols[c(which(Mt[,k]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[,k]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
+                                         prob=c(pro,(1-pro)/2,(1-pro)/2))
   
   newcols<-t(matrix(unlist(newcols),nrow=2,ncol=NROW(Mt)))
   
@@ -154,7 +160,7 @@ new_Mt_cospec <- function(Mt, possible_event, p){
   newrows[c(which(Mt[h,]==1))] <- sample(possible_output, 
                                          size=length(which(Mt[h,]==1)),
                                          replace = TRUE,
-                                         prob=c(p,(1-p)/2,(1-p)/2))
+                                         prob=c(pro,(1-pro)/2,(1-pro)/2))
   
   newrows <- matrix(unlist(newrows),nrow=2,ncol=NCOL(Mt))
   newrows <- cbind(newrows, diag(1,2,2))
