@@ -1,4 +1,4 @@
-result <- DAISIE_sim_core_mutualism(time =10,mutualism_pars = mutualism_pars)
+
 DAISIE_sim_core_mutualism <- function(time,
                                       mutualism_pars){
   
@@ -39,6 +39,7 @@ DAISIE_sim_core_mutualism <- function(time,
                                       island_spec = island_spec)
       
       possible_event <- DAISIE_sample_event_mutualism(rates = rates)
+      print(c(possible_event$L1,totaltime - timeval))
       
       updated_state <- DAISIE_sim_update_state_mutualism(timeval = timeval,
                                                          totaltime = totaltime,
@@ -74,10 +75,12 @@ DAISIE_sim_core_mutualism <- function(time,
       stt_table[nrow(stt_table), 7]
     )
   )
-  return(stt_table)
- # island <- DAISIE_create_island_mutualism()
-}
-
+  results <- list(stt_table = stt_table,
+                  updated_state = updated_state)
+  return(results)
+ }
+set.seed(1)
+result <- DAISIE_sim_core_mutualism(time =5,mutualism_pars = mutualism_pars)
 
 
 

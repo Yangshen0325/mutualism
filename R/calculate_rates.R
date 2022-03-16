@@ -15,7 +15,8 @@ update_rates_mutualism <- function(Mt,
   ext_rate <- get_ext_rate(
     Mt = Mt,
     p_status = p_status,
-    a_status = a_status
+    a_status = a_status,
+    mutualism_pars = mutualism_pars
   )
   
   ana_rate <- get_ana_rate(
@@ -90,7 +91,8 @@ get_immig_rate <- function(Mt,
 #extinction rate
 get_ext_rate <- function(Mt,
                          p_status,
-                         a_status) {
+                         a_status,
+                         mutualism_pars) {
   
   part_compe_list <- get_part_compe(Mt = Mt,
                                     p_status = p_status,
@@ -120,8 +122,8 @@ get_ana_rate <- function(Mt,
   
   plant_ind <-as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
                                               which(island_spec[,8] == "plant")),1])
-  animal_ind <-as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
-                                    which(island_spec[,8] == "animal")),1])
+  animal_ind <- as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
+                                    which(island_spec[,8] == "animal")),1])-length(p_status)
   possible_ana_p[plant_ind] = 1
   possible_ana_a[animal_ind] = 1
   
@@ -169,7 +171,7 @@ get_cospec_rate <- function(Mt,
                     a_status = a_status,
                     mutualism_pars = mutualism_pars)
   
-  expand_matrix_list <- get_expand_matrix(Mt=Mt,
+  expand_matrix_list <- get_expand_matrix(Mt = Mt,
                                           p_status = p_status,
                                           a_status = a_status)
   
@@ -204,8 +206,14 @@ get_loss_rate <- function(Mt,
                           a_status,
                           mutualism_pars){
   
+  expand_matrix_list <- get_expand_matrix(Mt = Mt,
+                                          p_status = p_status,
+                                          a_status = a_status)
+  
   qloss <- mutualism_pars$qloss
-  loss_rate <- qloss * Mt 
+  loss_rate <- qloss * Mt * (expand_matrix_list[[1]]*expand_matrix_list[[2]])+
+    +(1-expand_matrix_list[[1]]) * expand_matrix_list[[2]]
+    +(1-expand_matrix_list[[2]]) * expand_matrix_list[[1]]
   
   return(loss_rate)
 }
