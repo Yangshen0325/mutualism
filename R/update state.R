@@ -46,7 +46,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     }
     if (length(isitthere) != 0) {
       island_spec[isitthere,] = c(colonist,colonist,timeval,"I",NA,NA,NA,"plant")
-    }
+    } # we only use the most recent time for the same colonist. 
   } 
   
   ##########################################
@@ -81,7 +81,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
       {
         #survivors status becomes anagenetic
         island_spec[survivors,4] = "A"
-        island_spec[survivors,c(5,6)] = c(NA,NA)
+        island_spec[survivors,c(5,6)] = c(NA,NA)=
         island_spec[survivors,7] = "Clado_extinct"
         island_spec = island_spec[-ind, ]
       }
@@ -102,7 +102,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
         
         motiftofind = paste(substring(island_spec[ind,5],1,numberofsplits-1),
                             sistermostrecentspl,sep = "")
-        possiblesister = survivors[which(substring(island_spec[survivors,5],1,
+        possiblesister <- survivors[which(substring(island_spec[survivors,5],1,
                                                    numberofsplits) == motiftofind)]
         
         if(mostrecentspl == "A")
