@@ -331,7 +331,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     
     Mt <- new_Mt_ana_a(Mt=Mt,possible_event=possible_event,mutualism_pars=mutualism_pars)
     a_status[anagenesisID] <- 0
-    a_status <- c(a_statusID,1)
+    a_status <- c(a_status,1)
     anagenesis <- anagenesisID + length(p_status)
     
     ind <- which(island_spec[,1]==anagenesis)

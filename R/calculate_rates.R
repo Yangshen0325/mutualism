@@ -211,9 +211,10 @@ get_loss_rate <- function(Mt,
                                           a_status = a_status)
   
   qloss <- mutualism_pars$qloss
-  loss_rate <- qloss * Mt * (expand_matrix_list[[1]]*expand_matrix_list[[2]])+
+  
+  loss_rate <- qloss * Mt * (expand_matrix_list[[1]]*expand_matrix_list[[2]]+
     +(1-expand_matrix_list[[1]]) * expand_matrix_list[[2]]
-    +(1-expand_matrix_list[[2]]) * expand_matrix_list[[1]]
+    +(1-expand_matrix_list[[2]]) * expand_matrix_list[[1]])
   
   return(loss_rate)
 }
