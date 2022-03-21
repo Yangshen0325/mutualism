@@ -1,13 +1,11 @@
 
-DAISIE_sim_core_mutualism <- function(time,
+DAISIE_sim_core_mutualism <- function(totaltime,
                                       mutualism_pars){
   
   #### Initialization ####
   timeval <- 0
-  totaltime <- time
   M0 <- mutualism_pars$M0
-  maxplantID <- NROW(M0) 
-  maxanimalID <- NCOL(M0)
+  maxspecID <- NROW(M0) + NCOL(M0)
   Mt <- M0
   p_status <- rep(0, NROW(M0))
   a_status <- rep(0, NCOL(M0))
@@ -17,7 +15,6 @@ DAISIE_sim_core_mutualism <- function(time,
   stt_table <- matrix(ncol = 7)
   colnames(stt_table) <- c("Time", "nIp", "nAp", "nCp", "nIa","nAa","nCa")
   stt_table[1, ] <- c(totaltime, 0, 0, 0, 0, 0, 0)
-  
   
   #### Start Monte Carlo iterations ####
   while (timeval < totaltime) {
@@ -39,7 +36,7 @@ DAISIE_sim_core_mutualism <- function(time,
                                       island_spec = island_spec)
       
       possible_event <- DAISIE_sample_event_mutualism(rates = rates)
-      print(c(possible_event$L1,totaltime - timeval))
+      print(possible_event)
       
       updated_state <- DAISIE_sim_update_state_mutualism(timeval = timeval,
                                                          totaltime = totaltime,
@@ -47,8 +44,7 @@ DAISIE_sim_core_mutualism <- function(time,
                                                          Mt=Mt,
                                                          p_status=p_status,
                                                          a_status=a_status,
-                                                         maxplantID = maxplantID,
-                                                         maxanimalID = maxanimalID,
+                                                         maxspecID = maxspecID,
                                                          island_spec = island_spec,
                                                          stt_table = stt_table,
                                                          mutualism_pars = mutualism_pars)
@@ -57,8 +53,7 @@ DAISIE_sim_core_mutualism <- function(time,
       p_status <- updated_state$p_status
       a_status <- updated_state$a_status
       island_spec <- updated_state$island_spec
-      maxplantID <- updated_state$maxplantID
-      maxanimalID <- updated_state$maxanimalID
+      maxspecID <- updated_state$maxspecID
       stt_table <- updated_state$stt_table
     }
   } 

@@ -19,8 +19,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
                                               Mt,
                                               p_status,
                                               a_status,
-                                              maxplantID,
-                                              maxanimalID,
+                                              maxspecID,
                                               island_spec,
                                               stt_table,
                                               mutualism_pars ){
@@ -137,7 +136,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     if(island_spec[ind,4] == "C")
     {
       #for daughter A
-      island_spec[ind, 1] <- maxplantID + 1
+      island_spec[ind, 1] <- maxspecID + 1
       oldstatus <- island_spec[ind, 5]
       island_spec[ind, 5] = paste(oldstatus,"A",sep = "")
       island_spec[ind, 6] = timeval
@@ -145,24 +144,24 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
       island_spec[ind,8] = "plant"
       
       #for daughter B
-      island_spec <- rbind(island_spec,c(maxplantID + 2,island_spec[ind, 2],island_spec[ind, 3],
+      island_spec <- rbind(island_spec,c(maxspecID + 2,island_spec[ind, 2],island_spec[ind, 3],
                                                      "C",paste(oldstatus,"B",sep = ""),timeval,NA,"plant"))
-      maxplantID = maxplantID + 2
+      maxspecID = maxspecID + 2
     } else {
       #if the species that speciates is not cladogenetic
       
       #for daughter A
       island_spec[ind, 4] = "C"
-      island_spec[ind, 1] = maxplantID + 1
+      island_spec[ind, 1] = maxspecID + 1
       island_spec[ind, 5] = "A"
       island_spec[ind, 6] = island_spec[ind, 3]
       island_spec[ind, 7] = NA
       island_spec[ind,8] = "plant"
       
       #for daughter B
-      island_spec = rbind(island_spec,c(maxplantID + 2,island_spec[ind, 2],
+      island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[ind, 2],
                                                     island_spec[ind,3],"C","B",timeval,NA,"plant"))
-      maxplantID = maxplantID + 2
+      maxspecID = maxspecID + 2
     }
   } 
   
@@ -178,7 +177,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     
     ind <- which(island_spec[,1]==anagenesis)
     island_spec[ind, 4] = "A"
-    island_spec[ind, 1] = maxplantID + 1
+    island_spec[ind, 1] = maxspecID + 1
     island_spec[ind, 7] = "Immig_parent"
     island_spec[ind,8] = "plant"
     
@@ -275,7 +274,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
         island_spec[possiblesister,5] = paste(substring(island_spec[possiblesister,5],1,numberofsplits - 1),
                                                      substring(island_spec[possiblesister,5],numberofsplits + 1,
                                                                nchar(island_spec[possiblesister,5])),sep = "")
-        island_spec = island_spec[-int, ]
+        island_spec = island_spec[-ind, ]
       }
     }
     island_spec = rbind(island_spec)
@@ -296,30 +295,30 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     if(island_spec[ind,4] == "C")
     {
       #for daughter A
-      island_spec[ind, 1] <- maxanimalID + 1
+      island_spec[ind, 1] <- maxspecID + 1
       oldstatus <- island_spec[ind, 5]
       island_spec[ind, 5] = paste(oldstatus,"A",sep = "")
       island_spec[ind, 6] = timeval
       island_spec[ind, 7] = NA
       island_spec[ind,8] = "animal"
       #for daughter B
-      island_spec <- rbind(island_spec,c(maxanimalID + 2,island_spec[ind, 2],island_spec[ind, 3],
+      island_spec <- rbind(island_spec,c(maxspecID + 2,island_spec[ind, 2],island_spec[ind, 3],
                                                        "C",paste(oldstatus,"B",sep = ""),timeval,NA,"animal"))
-      maxanimalID = maxanimalID + 2
+      maxspecID = maxspecID + 2
     } else {
       #if the species that speciates is not cladogenetic
       
       #for daughter A
       island_spec[ind, 4] = "C"
-      island_spec[ind, 1] = maxanimalID + 1
+      island_spec[ind, 1] = maxspecID + 1
       island_spec[ind, 5] = "A"
       island_spec[ind, 6] = island_spec[ind, 3]
       island_spec[ind, 7] = NA
       island_spec[ind,8] = "animal"
       #for daughter B
-        island_spec = rbind(island_spec,c(maxanimalID + 2,island_spec[ind, 2],
+        island_spec = rbind(island_spec,c(maxspecID + 2,island_spec[ind, 2],
                                                       island_spec[ind,3],"C","B",timeval,NA,"animal"))
-        maxanimalID = maxanimalID + 2
+        maxspecID = maxspecID + 2
     }
   }
   
@@ -335,9 +334,9 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     anagenesis <- anagenesisID + length(p_status)
     
     ind <- which(island_spec[,1]==anagenesis)
-    maxanimalID <- maxanimalID + 1
+    maxspecID <- maxspecID + 1
     island_spec[ind, 4] = "A"
-    island_spec[ind, 1] = maxanimalID
+    island_spec[ind, 1] = maxspecID
     island_spec[ind, 7] = "Immig_parent"
     island_spec[ind,8] = "animal"
     
@@ -453,8 +452,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
                         p_status = p_status,
                         a_status = a_status,
                         island_spec = island_spec,
-                        maxplantID = maxplantID,
-                        maxanimalID = maxanimalID,
+                        maxspecID = maxspecID,
                         stt_table = stt_table)
   return(updated_state)
 }
