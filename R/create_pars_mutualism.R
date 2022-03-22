@@ -47,10 +47,10 @@ create_mutualism_pars <- function(lac_par,
       pro = pro)}
 
 mutualism_pars <- create_mutualism_pars(lac_par = c(0,0),
-                                      mu_par = c(0,0,0,0),
-                                      K_par = c(Inf,Inf,0,0),
+                                      mu_par = c(2,0,0,0),
+                                      K_par = c(Inf,Inf,Inf,Inf),
                                       gam_par = c(1, 0),
-                                      laa_par = c(2,0,0,0),
+                                      laa_par = c(0,0,0,0),
                                       qgain = 0,
                                       qloss = 0,
                                       lambda1 = 0,

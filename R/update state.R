@@ -52,8 +52,14 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
   # [2]: extinction event with plant species
   if(possible_event$L1 == 2){
     
-    extinct =  possible_event$Var1
-    p_status[extinct] <- 0
+    extinctID =  possible_event$Var1
+    p_status[extinctID] <- 0
+    
+    if (extinctID > NROW(M0)){
+      extinct <- extinctID + length(a_status)
+    }else{
+      extinct <- extinctID
+    }
     
     ind <- which(island_spec[,1]==extinct)
     typeofspecies = island_spec[ind,4] 
@@ -125,12 +131,18 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
   # [3]: cladogenesis event with plant species
   if(possible_event$L1 == 3){
     
-    tosplit <- possible_event$Var1
-    ind <- which(island_spec[,1]==tosplit)
-    
     Mt <- new_Mt_clado_p(Mt=Mt, possible_event=possible_event, mutualism_pars = mutualism_pars)
-    p_status[tosplit] <- 0
+    tosplitID <- possible_event$Var1
+    p_status[tosplitID] <- 0
     p_status <- c(p_status,1,1)
+    
+    if(tosplitID > NROW(M0)){
+      tosplit <- tosplitID + length(a_status)
+    } else {
+      tosplit <- tosplitID
+    }
+    
+    ind <- which(island_spec[,1]==tosplit)
     
     #if the species that speciates is cladogenetic
     if(island_spec[ind,4] == "C")
@@ -181,7 +193,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     island_spec[ind, 7] = "Immig_parent"
     island_spec[ind,8] = "plant"
     
-    maxplantID <- maxplantID + 1
+    maxspecID <- maxspecID + 1
   } 
   
   ##########################################
@@ -190,7 +202,7 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     
     colonistID <- possible_event$Var1
     a_status[colonistID] <- 1
-    colonist <- colonistID + length(p_status)
+    colonist <- colonistID + NROW(M0)
     
     if (length(island_spec[,1]) != 0)
     {
@@ -212,7 +224,13 @@ DAISIE_sim_update_state_mutualism <- function(timeval,
     
     extinctID <- possible_event$Var1
     a_status[extinctID] <- 0
-    extinct <-  extinctID + length(p_status)
+    
+    if (extinctID > NCOL(M0)){
+      extinct <-  extinctID + length(p_status)
+    } else {
+      extinct <- extinctID 
+    }
+    
     
     ind <- which(island_spec[,1]==extinct)
     typeofspecies = island_spec[ind,4]
