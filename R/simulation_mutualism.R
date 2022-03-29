@@ -4,8 +4,10 @@ DAISIE_sim_core_mutualism <- function(totaltime,
   
   #### Initialization ####
   timeval <- 0
+  totaltime <- 1 
   M0 <- mutualism_pars$M0
-  maxspecID <- NROW(M0) + NCOL(M0)
+  maxplantID <- NROW(M0)
+  maxanimalID <- NCOL(M0)
   Mt <- M0
   p_status <- rep(0, NROW(M0))
   a_status <- rep(0, NCOL(M0))
@@ -36,24 +38,25 @@ DAISIE_sim_core_mutualism <- function(totaltime,
                                       island_spec = island_spec)
       
       possible_event <- DAISIE_sample_event_mutualism(rates = rates)
-      print(possible_event)
-      
+      print(possible_event$L1)
       updated_state <- DAISIE_sim_update_state_mutualism(timeval = timeval,
                                                          totaltime = totaltime,
                                                          possible_event = possible_event,
-                                                         Mt=Mt,
-                                                         p_status=p_status,
-                                                         a_status=a_status,
-                                                         maxspecID = maxspecID,
+                                                         Mt = Mt,
+                                                         p_status = p_status,
+                                                         a_status = a_status,
+                                                         maxplantID = maxplantID,
+                                                         maxanimalID = maxanimalID,
                                                          island_spec = island_spec,
                                                          stt_table = stt_table,
                                                          mutualism_pars = mutualism_pars)
-      
+  
       Mt <- updated_state$Mt
       p_status <- updated_state$p_status
       a_status <- updated_state$a_status
       island_spec <- updated_state$island_spec
-      maxspecID <- updated_state$maxspecID
+      maxplantID <- updated_state$maxplantID
+      maxanimalID <- updated_state$maxanimalID
       stt_table <- updated_state$stt_table
     }
   } 
@@ -70,12 +73,16 @@ DAISIE_sim_core_mutualism <- function(totaltime,
       stt_table[nrow(stt_table), 7]
     )
   )
-  results <- list(stt_table = stt_table,
-                  updated_state = updated_state)
-  return(results)
+  return(list(island_spec = island_spec,
+              stt_table = stt_table))
+  #island <- DAISIE_create_island_mutualism(
+  #  stt_table = stt_table,
+  #  totoaltime = totaltime,
+  #  island_spec = island_spec,
+  #  M0 = M0)
  }
-set.seed(1)
-result <- DAISIE_sim_core_mutualism(time =5,mutualism_pars = mutualism_pars)
+#set.seed(1)
+#result <- DAISIE_sim_core_mutualism(totaltime =1,mutualism_pars = mutualism_pars)
 
 
 
