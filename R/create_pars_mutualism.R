@@ -46,14 +46,14 @@ create_mutualism_pars <- function(lac_par,
        M0 = M0,
       pro = pro)}
 
-mutualism_pars <- create_mutualism_pars(lac_par = c(1, 1),
-                                      mu_par = c(1, 1, 0, 0),
+mutualism_pars <- create_mutualism_pars(lac_par = c(2, 0),
+                                      mu_par = c(0, 0, 0, 0),
                                       K_par = c(Inf, Inf, Inf, Inf),
-                                      gam_par = c(1, 1),
-                                      laa_par = c(1, 1, 0, 0),
+                                      gam_par = c(1, 0),
+                                      laa_par = c(1, 0, 0, 0),
                                       qgain = 0,
                                       qloss = 0,
-                                      lambda1 = 1,
+                                      lambda1 = 0,
                                       M0 = {set.seed(1);matrix(sample(c(0,1),40,replace = TRUE),ncol=5,nrow=8)},
                                       pro = 1)
 

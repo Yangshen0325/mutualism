@@ -123,14 +123,14 @@ get_ana_rate <- function(Mt,
   plant_ind <-as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
                                               which(island_spec[,8] == "plant")),1])
   animal_ind <- as.numeric(island_spec[intersect(which(island_spec[,4] == "I"),
-                                    which(island_spec[,8] == "animal")),1])-length(p_status)
-  possible_ana_p[plant_ind] = 1
-  possible_ana_a[animal_ind] = 1
+                                    which(island_spec[,8] == "animal")),1])
+  possible_ana_p[plant_ind] <- 1
+  possible_ana_a[animal_ind] <- 1
   
-  plant_ana_rate =  (laa_par[1] +
+  plant_ana_rate <-  (laa_par[1] +
                        laa_par[3] * abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0) %*% a_status[1:NCOL(M0)]) *
     p_status[1:NROW(M0)] * possible_ana_p
-  animal_ana_rate =  (laa_par[2] +
+  animal_ana_rate <-  (laa_par[2] +
                         laa_par[4] * t(abs(Mt[1:NROW(M0),1:NCOL(M0)]-M0)) %*% p_status[1:NROW(M0)]) *
     a_status[1:NCOL(M0)] * possible_ana_a
   
