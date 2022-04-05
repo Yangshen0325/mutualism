@@ -73,8 +73,7 @@ DAISIE_sim_core_mutualism <- function(totaltime,
       stt_table[nrow(stt_table), 7]
     )
   )
-  # return(list(island_spec = island_spec,
-  #            stt_table = stt_table))
+  # return(updated_state)
   island <- DAISIE_create_island_mutualism(
     stt_table = stt_table,
     totaltime = totaltime,
@@ -83,7 +82,7 @@ DAISIE_sim_core_mutualism <- function(totaltime,
   return(island)
  }
 #set.seed(1)
-result <- DAISIE_sim_core_mutualism(totaltime =1,mutualism_pars = mutualism_pars)
+#result <- DAISIE_sim_core_mutualism(totaltime =3,mutualism_pars = mutualism_pars)
 
 
 
